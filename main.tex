@@ -1,0 +1,43 @@
+\documentclass{article}
+
+\usepackage{url} % Tidy web links
+\usepackage{microtype} % 'Improved' typesetting
+\usepackage{parskip} % Adds white space between paragraphs
+\usepackage[super]{natbib} % Citations using superscript
+\usepackage[a4paper, left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{longtable,booktabs}  % For tables
+\usepackage{caption} % For figure and table captions
+\usepackage{graphicx} % Adds more functionality to graphics for inclusion of figures
+\usepackage{lineno} % Allows use of \linenumbers to add line numbers 
+\usepackage[toc,page]{appendix}
+\usepackage[utf8]{inputenc}
+\frenchspacing % No double spacing between sentences
+\linespread{1.2} % Set linespace
+\usepackage{authblk} % For author formatting
+
+
+\begin{document}
+
+\include{sections/1_title}
+
+\maketitle
+
+\include{sections/2_abstract}
+\include{sections/3_introduction}
+\include{sections/4_methods}
+\include{sections/5_results}
+\include{sections/6_discussion}
+
+
+\section{References}
+\bibliographystyle{ieeetr}
+\bibliography{references}
+
+% Force new page
+\clearpage
+\newpage
+
+% Use * to avoid numbering of section
+\include{sections/appendix}
+
+\end{document}
