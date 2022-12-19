@@ -356,13 +356,13 @@ extreme or the other.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Variation in thrombolysis use}
 
-Thrombolysis use in the original data varied between hospitals (figure \ref{fig:observed_thrombolysis}, from 1.5\% to 24.3\% of all patients, and 7.3\% to 49.7\% of patients arriving within 4 hours of known stroke onset.
+Thrombolysis use in the original data varied between hospitals (figure \ref{fig:observed_thrombolysis_appendix}), from 1.5\% to 24.3\% of all patients, and 7.3\% to 49.7\% of patients arriving within 4 hours of known stroke onset.
 
 \begin{figure}
 \centering
 \includegraphics[width=1.0\textwidth]{./images/thrombolysis_hist}
 \caption{Histogram of observed thrombolysis use in 132 hospitals. Left: Thrombolysis shown as a percentage of all emergency stroke admissions. Right: Thrombolysis shown as a percentage of those patients who arrive at hospitals within 4 hours of known stroke onset.}
-\label{fig:observed_thrombolysis}
+\label{fig:observed_thrombolysis_appendix}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -402,7 +402,15 @@ The 10 features selected (figure \ref{fig:feature_selection}) were:
 \label{fig:feature_selection}
 \end{figure}
 
-All results from this point forward will use the 10 feature model.
+
+\vspace{5mm}
+
+\begin{center}
+    \textbf{\large{NOTE: All results from this point forward will use the 10 feature model.}}
+\end{center}
+
+
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -656,7 +664,7 @@ As shown in figure \ref{fig:most_thrombolysable}, compared with the other groups
 \begin{figure}
 \centering
 \includegraphics[width=1\textwidth]{./images/02a_most_thrombolsyable_violin}
-\caption{Violin plots comparing feature values between the patient with the highest probability of thrombolysis at each hospital with all patients, all patients who had received thrombolysis, and all patients who had not received thrombolysis. Horizontal lines show the mean value of each group.}
+\caption{Violin plots comparing feature values between the patient with the highest probability of thrombolysis at each hospital with all patients, all patients who had received thrombolysis, and all patients who had not received thrombolysis. Horizontal blue lines show the mean value of each group.}
 \label{fig:most_thrombolysable}
 \end{figure}
 
@@ -665,6 +673,28 @@ As shown in figure \ref{fig:most_thrombolysable}, compared with the other groups
 \subsection{Explaining model predictions with SHAP}
 
 SHAP values describe how much a feature affects the probability of receiving thrombolysis. These are usually expressed as log odds.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsubsection{Waterfall plots for individual patient predictions}
+
+Waterfall plots show the influence of features for an individual prediction. We generally handle SHAP values as how they affect log odds of receiving thrombolysis, but for individual predictions, probability plots are more intuitive for many people to follow. The example shown in figure \ref{fig:waterfall_low}is for a patient with a low probability of receiving thrombolysis. The model started with a base prediction of a 24\% probability of receiving thrombolysis, before feature values are taken into account. Some features (coloured red) increased that base probability of receiving thrombolysis; those were onet-to-arrival time, having a precise onset time, having no prior disability, and being young. Three features (shown in blue) reduced the probability of receiving thrombolysis: the hospital they attended, the long arrival-to-scan time, and having a mild stroke, with a resulting final probability of receiving thrombolysis of 3\%.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.85\textwidth]{./images/03_xgb_10_features_waterfall_probability_low}
+\caption{Waterfall plot showing the influence of each feature on the predicted probability of a single patient receiving thrombolysis. This example is for a patient with a predicted low probability of receiving thrombolysis.}
+\label{fig:waterfall_low}
+\end{figure}
+
+Figure \ref{fig:waterfall_high} a similar plot for a patient with a high (96\%) probability of receiving thrombolysis.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.85\textwidth]{./images/03_xgb_10_features_waterfall_probability_high}
+\caption{Waterfall plot showing the influence of each feature on the predicted probability of a single patient receiving thrombolysis. This example is for a patient with a predicted high probability of receiving thrombolysis.}
+\label{fig:waterfall_high}
+\end{figure}
 
 \subsubsection{Consistency of SHAP values across 5-fold validation}
 
@@ -717,7 +747,7 @@ Note: SHAP values are not necessarily the same for all instances with the same f
 \begin{figure}
 \centering
 \includegraphics[width=1\textwidth]{./images/03_xgb_10_features_thrombolysis_shap_violin}
-\caption{Violin plots showing the relationship between SHAP values and feature values. The horizontal line shows the median SHAP value. SHAP values were taken from the training set of the first of 5 k-fold train/test splits.}
+\caption{Violin plots showing the relationship between SHAP values and feature values. The horizontal blue lines show the median SHAP value. SHAP values were taken from the training set of the first of 5 k-fold train/test splits.}
 \label{fig:shap_violin}
 \end{figure}
 
@@ -746,7 +776,7 @@ Key observations were, with SHAP values converted back to odds were:
 \subsubsection{Hospital SHAP values}
 
 
-When examining SHAP, we took the hospital SHAP values for patients attending each hospital (if we examined the hospital SHAP for all patients, it would be dominated by those not-attending each hospital (i.e. coded zero in the one-hot encoding). When we examined the hospital SHAP values for a model trained on all the data (figure \ref{fig:shap_histogram}), and only for patients attending each hospital, the hospital SHAP values ranged from -1.4 to +1.4. This range of SHAP (log odds) represents a 15 fold difference in odds of receiving thrombolysis (most are in the range of -1 to +1, but this still represents a 7-8 fold difference in odds of receiving thrombolysis). 
+When examining SHAP, we took the hospital SHAP values for patients attending each hospital. If we examined the hospital SHAP for all patients, it would be dominated by those not-attending each hospital (i.e. coded zero in the one-hot encoding). When we examined the hospital SHAP values for a model trained on all the data (figure \ref{fig:shap_histogram}), and only for patients attending each hospital, the hospital SHAP values ranged from -1.4 to +1.4. This range of SHAP (log odds) represents a 15 fold difference in odds of receiving thrombolysis (most are in the range of -1 to +1, but this still represents a 7-8 fold difference in odds of receiving thrombolysis). 
 
 \begin{figure}
 \centering
@@ -806,27 +836,6 @@ Though we model the same 10k patients going to all hospitals, we found that the 
 \label{fig:shap_boxplot_2}
 \end{figure}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\subsubsection{Waterfall plots for individual patient predictions}
-
-Waterfall plots show the influence of features for an individual prediction. We generally handle SHAP values as how they affect log odds of receiving thrombolysis, but for individual predictions, probability plots are more intuitive for many people to follow. The example shown in figure \ref{fig:waterfall_low}is for a patient with a low probability of receiving thrombolysis. The model started with a base prediction of a 24\% probability of receiving thrombolysis, before feature values are taken into account. Some features (coloured red) increased that base probability of receiving thrombolysis; those were onet-to-arrival time, having a precise onset time, having no prior disability, and being young. Three features (shown in blue) reduced the probability of receiving thrombolysis: the hospital they attended, the long arrival-to-scan time, and having a mild stroke, with a resulting final probability of receiving thrombolysis of 3\%.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.85\textwidth]{./images/03_xgb_10_features_waterfall_probability_low}
-\caption{Waterfall plot showing the influence of each feature on the predicted probability of a single patient receiving thrombolysis. This example is for a patient with a predicted low probability of receiving thrombolysis.}
-\label{fig:waterfall_low}
-\end{figure}
-
-Figure \ref{fig:waterfall_high} a similar plot for a patient with a high (96\%) probability of receiving thrombolysis.
-
-\begin{figure}
-\centering
-\includegraphics[width=0.85\textwidth]{./images/03_xgb_10_features_waterfall_probability_high}
-\caption{Waterfall plot showing the influence of each feature on the predicted probability of a single patient receiving thrombolysis. This example is for a patient with a predicted high probability of receiving thrombolysis.}
-\label{fig:waterfall_high}
-\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -855,7 +864,7 @@ Team HZNVT9936G has a slightly higher main effect for hospital SHAP (0.26) than 
 
 The main effect of stroke severity is to significantly reduce the odds of receiving thrombolysis for mild strokes (NIHSS 0-5), increase the odds of receiving thrombolysis for more moderate to sever strokes (NIHSS 6-32), and then reduce the odds of receiving thrombolysis for very severe stroke strokes (NIHSS 33+).
 
-Team TPXYE0168D has a higher general tendency to use thrombolysis than team SMVTP6284P (team main effect SHAP = 0.92 vs 0.62). As is seen in figure \ref{fig:interaction_nihss}, team TPXYE0168D has a SHAP interaction that opposes the general stroke severity main effect, especially increasing the odds of receiving thrombolysis for mild strokes. Team SMVTP6284P strengthens the main effect of stroke severity - reducing the odds of receiving thrombolysis even further for mild strokes.
+Team TPXYE0168D has a higher general tendency to use thrombolysis than team SMVTP6284P (team main effect SHAP = 0.92 vs 0.62). As is seen in figure \ref{fig:interaction_nihss}, team TPXYE0168D has a SHAP interaction that opposes the general stroke severity main effect, especially attenuating the reduced odds of receiving thrombolysis for mild strokes from the main effect of stroke severity. Team SMVTP6284P strengthens the main effect of stroke severity - reducing the odds of receiving thrombolysis even further for mild strokes.
 
 \begin{figure}
 \centering
@@ -868,7 +877,7 @@ Team TPXYE0168D has a higher general tendency to use thrombolysis than team SMVT
 
 \subsubsection{Hospital and and prior disability interaction}
 
-The main effect of prior disability is to progressively reduce the odds of receiving thrombolysis with increasing disability (a SHAP of +0.3 for mrS=0 down to -1.50 for mRS=5). As is seen in figure \ref{fig:interaction_mrs}, team XKAWN3771U has a slightly higher general tendency to use thrombolysis than team AKCGO9726K (team main effect SHAP = 0.78 vs 0.45). Team XKAWN3771U has a SHAP interaction that opposes the general prior disability main effect. Team AKCGO9726K strengthens the main effect of pre-stroke disability,reducing the odds of receiving thrombolysis even further for mild strokes.
+The main effect of prior disability is to progressively reduce the odds of receiving thrombolysis with increasing disability (a SHAP of +0.3 for mrS=0 down to -1.50 for mRS=5). As is seen in figure \ref{fig:interaction_mrs}, team XKAWN3771U has a slightly higher general tendency to use thrombolysis than team AKCGO9726K (team main effect SHAP = 0.78 vs 0.45). Team XKAWN3771U has a SHAP interaction that attenuates the general prior disability main effect. Team AKCGO9726K strengthens the main effect of pre-stroke disability,reducing the odds of receiving thrombolysis even further for mild strokes.
 
 \begin{figure}
 \centering
@@ -949,7 +958,7 @@ Some differences existed:
     \item The observed thrombolysis rate shows higher between-hospital variation than the predicted thrombolysis rate. This may be partly explained by the observed thrombolysis rate being on different patients at each hospital, but may also be partly explained by actual use of thrombolysis being slightly more variable than predicted thrombolysis use (which will follow general hospital patterns, and will not include, for example, between-clinician variation at each hospital).
 \end{itemize}
 
-When we look at thrombolysis use in subgroups at each hospital we see that the observed thrombolysis use tended to reduce in parallel (figure \ref{fig:subgroup_rate_1}, along with total thrombolysis use, suggesting a shared caution in use of thrombolysis in 'less ideal' patients. 
+When we look at observed thrombolysis use in subgroups at each hospital we see that the thrombolysis use across the subgroups tended to reduce in parallel (figure \ref{fig:subgroup_rate_1}, along with thrombolysis use for all patients, suggesting a  caution in use of thrombolysis in all subgroups of 'less than ideal' patients. 
 
 \begin{figure}
 \centering
@@ -958,7 +967,7 @@ When we look at thrombolysis use in subgroups at each hospital we see that the o
 \label{fig:subgroup_rate_1}
 \end{figure}
 
-This parallel reduction in use of thrombolysis across the subgroups was also seen in the predicted use of thrombolysis (figure \ref{fig:subgroup_rate_2}).
+This parallel reduction in use of thrombolysis across the subgroups was also seen in the predicted use of thrombolysis in the 10k cohort of patients (figure \ref{fig:subgroup_rate_2}).
 
 \begin{figure}
 \centering
