@@ -38,7 +38,7 @@ Correlations between the 10 features were measured using coefficients of determi
 
 \begin{figure}
 \centering
-\includegraphics[width=0.8\textwidth]{./images/03_xgb_10_features_waterfall_probability_low}
+\includegraphics[width=0.8\textwidth]{./images/waterfall}
 \caption{Waterfall plot showing the influence of each feature on the predicted probability of a single patient receiving thrombolysis. This example is for a patient with a predicted low probability of receiving thrombolysis.}
 \end{figure}
 
@@ -48,6 +48,22 @@ Correlations between the 10 features were measured using coefficients of determi
 \caption{Violin plots showing the relationship between SHAP values and feature values. The horizontal line shows the median SHAP value. SHAP values were taken from the training set of the first of 5 k-fold train/test splits.}
 \end{figure}
 
+\begin{figure}
+\centering
+\includegraphics[width=1\textwidth]{./images/99_twin_correlation_scatter}
+\caption{}
+\end{figure}
+
+
+
+\begin{figure}
+\centering
+\includegraphics[width=1.0\textwidth]{./images/12aa_xgb_10_features_3_features_interaction_example_with_main_effect}
+\caption{}
+\end{figure}
+
+SHAP interaction between hospital ID for two teams and whether stroke onset time was known precisely. If a patient attended team HZNVT9936G then SHAP value for having a precise onset time was increased (a strengthening of the main effect of precise onset time). If a patient attended team FAJKD7118X then SHAP value for having a precise onset time was reduced (an attenuation of the main effect of precise onset time).
+
 
 \begin{figure}
 \centering
@@ -55,14 +71,10 @@ Correlations between the 10 features were measured using coefficients of determi
 \caption{Boxplot for either observed (top) or predicted (bottom) use of thrombolysis for subgroups of patients.}
 \end{figure}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.7\textwidth]{./images/12aa_onset_time_type_interaction_example}
-\caption{SHAP interaction between hospital ID for two teams and whether stroke onset time was known precisely. If a patient attended team HZNVT9936G then SHAP value for having a precise onset time was increased (a strengthening of the main effect of precise onset time). If a patient attended team FAJKD7118X then SHAP value for having a precise onset time was reduced (an attenuation of the main effect of precise onset time).}
-\end{figure}
 
-% Add correlation plots of SHAP vs thrombolysis
-% Two waterfall plots together
+
+
+
 % Add detail on how standard devisation chart binned
 
 
