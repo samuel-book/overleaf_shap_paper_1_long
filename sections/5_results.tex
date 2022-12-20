@@ -1,28 +1,39 @@
 \section{Results}
 
+\subsection{Variation in thrombolysis use}
+
+Thrombolysis use in the original data varied between hospitals (figure \ref{fig:observed_thrombolysis}), from 1.5\% to 24.3\% of all patients, and 7.3\% to 49.7\% of patients arriving within 4 hours of known stroke onset.
+
+\begin{figure}
+\centering
+\includegraphics[width=1.0\textwidth]{./images/thrombolysis_hist}
+\caption{Histogram of observed thrombolysis use in 132 hospitals. Left: Thrombolysis shown as a percentage of all emergency stroke admissions. Right: Thrombolysis shown as a percentage of those patients who arrive at hospitals within 4 hours of known stroke onset.}
+\label{fig:observed_thrombolysis}
+\end{figure}
+
+\subsection{Feature selection}
+
+In order to provide a more explainable machine learning model, the number of features were restricted to those that provide most information regarding use of thrombolysis. 25 features were selected by identifying one feature at a time that led to greatest improvement in Receiver Operating Characteristic (ROC) Area Under Curve (AUC). ROC AUC was measured using stratified 5-fold cross validation.
+
+The best model with 1, 2, 5, 10, 25 & all features (60 features before one-hot encoding of fields) had ROC AUCs of 0.715, 0.792, 0.891, 0.919, 0.923 & 0.922. We selected 10 features for all subsequent work, which were:
+
+\begin{itemize}
+    \item \emph{Arrival-to-scan time}: Time from arrival at hospital to scan (mins)
+    \item \emph{Infarction}: Stroke type (1 = infarction, 0 = haemorrhage)
+    \item \emph{Stroke severity}: Stroke severity (NIHSS) on arrival
+    \item \emph{Precise onset time}: Onset time type (1 = precise, 0 = best estimate)
+    \item \emph{Prior disability level}: Disability level (modified Rankin Scale) before stroke
+    \item \emph{Stroke team}: Stroke team attended
+    \item \emph{Use of AF anticoagulants}: Use of atrial fibrillation anticoagulant (1 = Yes, 0 = No)
+    \item \emph{Onset-to-arrival time}: Time from onset of stroke to arrival at hospital (mins)
+    \item \emph{Onset during sleep}: Did stroke occur in sleep?
+    \item \emph{Age}: Age (as middle of 5 year age bands)
+\end{itemize}
+
+Correlations between the 10 features were measured using coefficients of determination (r-squared). All r-squared were less than 0.15, and all r-squared were less than 0.05 except 1) age and prior disability level (r-squared 0.146), and 2) onset during sleep and precise onset time (r-squared 0.078). All correlations are shown in table \ref{tab:correl}.
+
 \subsection{Model accuracy}
 
-\begin{minipage}{\textwidth}
-\begin{longtable}[]{@{}lll@{}}
-\caption{Accuracy of 10 feature XGBoost model in predicting thrombolysis use in patients arriving at hospital within 4 hours of known stroke onset.}\\
-\toprule
-Accuracy measurement & mean & std\tabularnewline
-\midrule
-\endhead
-Actual positive rate & 0.296 & 0.000\tabularnewline
-Actual negative rate & 0.704 & 0.000\tabularnewline
-Predicted positive rate & 0.294 & 0.002\tabularnewline
-Predicted negative rate & 0.706 & 0.002\tabularnewline
-Accuracy & 0.850 & 0.004\tabularnewline
-Sensitivity (recall) & 0.743 & 0.004\tabularnewline
-Specificity & 0.894 & 0.004\tabularnewline
-Precision & 0.747 & 0.007\tabularnewline
-ROC AUC & 0.918 & 0.003\tabularnewline
-Balanced sensitivity/specificity & 0.839 & 0.003\tabularnewline
-\bottomrule
-\label{tab:accuracy}
-\end{longtable}
-\end{minipage}
 
 
 \begin{figure}
@@ -50,13 +61,9 @@ Balanced sensitivity/specificity & 0.839 & 0.003\tabularnewline
 \caption{SHAP interaction between hospital ID for two teams and whether stroke onset time was known precisely. If a patient attended team HZNVT9936G then SHAP value for having a precise onset time was increased (a strengthening of the main effect of precise onset time). If a patient attended team FAJKD7118X then SHAP value for having a precise onset time was reduced (an attenuation of the main effect of precise onset time).}
 \end{figure}
 
-\begin{figure}
-\centering
-\includegraphics[width=0.7\textwidth]{./images/05_benchmark_thrombolysis_key_features}
-\caption{A comparison of observed (actual) thrombolysis rate at each hospital and the predicted thrombolysis rate if decisions were made according to the majority vote of the 30 benchmark hospitals. The solid circle shows the current thrombolysis use, and the open circle shows the thrombolysis use predicted by a majority vote of the benchmark hospitals. The red points are those hospitals that are in the top 30 thrombolysing hospitals (the benchmark set) when 10k cohort thrombolysis use is predicted, with all other hospitals coloured blue.}
-\end{figure}
-
-
+% Add correlation plots of SHAP vs thrombolysis
+% Two waterfall plots together
+% Add detail on how standard devisation chart binned
 
 
 
