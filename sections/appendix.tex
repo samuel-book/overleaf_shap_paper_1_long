@@ -948,7 +948,7 @@ The observed and predicted subgroup analysis show very similar general patterns 
 \label{fig:subgroup_correlation}
 \end{figure}
 
-The three subgroups of NIHSS <5, no precise stroke onset time, and pre-stroke mRS > 2, all had reduced thrombolysis use, and combining these non-ideal features reduced thrombolysis use further.
+The three subgroups of NIHSS $<$5, no precise stroke onset time, and pre-stroke mRS > 2, all had reduced thrombolysis use, and combining these non-ideal features reduced thrombolysis use further.
 
 Some differences existed:
 
@@ -1047,6 +1047,16 @@ Starting with the ideal patient, and changing only feature at a time we investig
 \caption{The effect of changing stroke severity, pre-stroke disability, or precise onset time on the proportion of hospitals that would be expected to give thrombolysis to a patient. Patients otherwise have the following feature values: Onset to arrival = 80 mins, Arrival to scan = 20 mins, Infarction = 1, NIHSS = 15, Prior disability level = 0, Precise onset time = 1, Use of AF anticoagulants = 0.}
 \label{fig:artificial_1}
 \end{figure}
+
+Figure \ref{fig:artifivial_shap_waterfall_with_violin} shows SHAP waterfall plots for the same patient attending each of 132 hopsitals.
+
+\begin{figure}
+\centering
+\includegraphics[width=0.7\textwidth]{./images/shap_waterfall_with_violin}
+\caption{SHAP waterfall plots for the same patient attending 132 different hospitals. The patient has the following feature values: Onset to arrival = 80 mins, Arrival to scan = 20 mins, Infarction = 1, NIHSS = 5, Prior disability level = 0, Precise onset time = 1, Use of AF anticoagulants = 0.}
+\label{fig:artifivial_shap_waterfall_with_violin}
+\end{figure}
+
 
 We also studied combining changes to the patient (starting with the 'ideal' thrombolysable patient). Figure \ref{fig:artificial_2} shows the proportion of hospitals predicted to give a patient thrombolysis by altering stroke severity in combination with estimated (non-precise) onset time, mild pre-existing disability (mRS 2), or a combination of estimated onset time and mild pre-existing disability.
 
