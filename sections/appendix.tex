@@ -579,7 +579,7 @@ Additionally, we used the models and test set to predict thrombolysis use at eac
 \begin{figure}
 \centering
 \includegraphics[width=1\textwidth]{./images/50_bootstrap_10k_sd}
-\caption{Mean and standard deviation of predicted thrombolysis use at 132 hospitals from 30 bootstrapped models. Results are for predicted thrombolysis use for the same 10k patient cohort for each hopsital. In addition to the results for the bagging models, the predicted thrombolysis use for a single model with bootstrap sampling is shown. Results are ordered by thrombolysis use at each hospital predicted from the single non-bootstrap model.}
+\caption{Mean and standard deviation of predicted thrombolysis use at 132 hospitals from 30 bootstrapped models. Results are for predicted thrombolysis use for the same 10k patient cohort for each hospital. In addition to the results for the bagging models, the predicted thrombolysis use for a single model with bootstrap sampling is shown. Results are ordered by thrombolysis use at each hospital predicted from the single non-bootstrap model.}
 \label{fig:bootstrap_2}
 \end{figure}
 
@@ -980,7 +980,7 @@ This parallel reduction in use of thrombolysis across the subgroups was also see
 
 \subsection{A comparison of thrombolysis use in high and low thrombolysing units by feature values}
 
-We investigated the relationships between feature values and thrombolysis use for low and high thrombolysing hospitals (figure \ref{fig:thrombolysis_by_feature_value}). The high and low thrombolysing hopsitals were taken as the top and bottom 30 hospitals as ranked by the predicted thrombolysis use in the same 10k cohort of patients. We found that thrombolysis use in low thrombolysing hospitals followed the same general relationship with feature values as the high thrombolysing hospitals, but thrombolysis was consistently lower.
+We investigated the relationships between feature values and thrombolysis use for low and high thrombolysing hospitals (figure \ref{fig:thrombolysis_by_feature_value}). The high and low thrombolysing hospitals were taken as the top and bottom 30 hospitals as ranked by the predicted thrombolysis use in the same 10k cohort of patients. We found that thrombolysis use in low thrombolysing hospitals followed the same general relationship with feature values as the high thrombolysing hospitals, but thrombolysis was consistently lower.
 
 \begin{figure}
 \centering
@@ -1048,13 +1048,13 @@ Starting with the ideal patient, and changing only feature at a time we investig
 \label{fig:artificial_1}
 \end{figure}
 
-Figure \ref{fig:artifivial_shap_waterfall_with_violin} shows SHAP waterfall plots for the same patient attending each of 132 hopsitals.
+Figure \ref{fig:artificial_shap_waterfall_with_violin} shows SHAP waterfall plots for the same patient attending each of 132 hospitals.
 
 \begin{figure}
 \centering
-\includegraphics[width=0.7\textwidth]{./images/21_shap_waterfall_with_violin}
-\caption{SHAP waterfall plots for the same patient attending 132 different hospitals. The patient has the following feature values: Onset to arrival = 80 mins, Arrival to scan = 20 mins, Infarction = 1, NIHSS = 5, Prior disability level = 0, Precise onset time = 1, Use of AF anticoagulants = 0.}
-\label{fig:artifivial_shap_waterfall_with_violin}
+\includegraphics[width=0.7\textwidth]{./images/21_shap_waterfall_with_violin_contentious}
+\caption{SHAP waterfall plots for the same patient attending 132 different hospitals. The patient has the following feature values: Onset to arrival = 80 mins, Arrival to scan = 20 mins, Infarction = 1, NIHSS = 5, Prior disability level = 0, Precise onset time = 0, Use of AF anticoagulants = 0.}
+\label{fig:artificial_shap_waterfall_with_violin}
 \end{figure}
 
 
