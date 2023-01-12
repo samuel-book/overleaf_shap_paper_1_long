@@ -158,14 +158,12 @@ For both the predicted and observed thrombolysis, subgroup thrombolysis use tend
 
 \subsection{Comparing predicted thrombolysis decisions across hospitals, using artificial patients}
 
-Artificial patients may be used to explore how decisions vary between hospitals. For example, a patient with moderate/severe stroke severity (NIHSS=15), infarction, having a precise onset time (and not during sleep), onset-to-arrival of 60 minutes, arrival to scan of 15 minutes, no prior disability, aged 72, and not using anticoagulants for atrial fibrillation, would be expected to receive thrombolysis at all hospitals. But if we take exactly that same patient but change stroke severity to 5, with the patient having a non-precise onset time, that patient would be expected to receive thrombolysis in only 35\% of hospitals, with a clear divide between the benchmark hospitals (90\% predicted to give thrombolysis) and non-benchmark hospitals (19\% predicted to give thrombolysis).
-
-Figure \ref{fig:results_artifical_shap_waterfall_with_violin} shows SHAP waterfall plots for the same patient attending each of 132 hospitals.
+Artificial patients may be used to explore how decisions vary between hospitals. For example, a patient with moderate/severe stroke severity (NIHSS=15), infarction, having a precise onset time (and not during sleep), onset-to-arrival of 60 minutes, arrival to scan of 15 minutes, no prior disability, aged 72, and not using anticoagulants for atrial fibrillation, was predictde to receive thrombolysis at all hospitals. But if we took exactly that same patient but changed stroke severity to 5, with the patient also having a non-precise onset time, that patient would be expected to receive thrombolysis in only 35\% of hospitals, with a clear divide between the benchmark hospitals (90\% predicted to give thrombolysis) and non-benchmark hospitals (19\% predicted to give thrombolysis). Figure \ref{fig:results_artifical_shap_waterfall_with_violin} shows SHAP  plots for this patient attending each of 132 hospitals.
 
 \begin{figure}
 \centering
 \includegraphics[width=0.85\textwidth]{./images/21_shap_waterfall_with_violin_contentious}
-\caption{SHAP waterfall plots for the same patient attending 132 different hospitals. The patient has the following feature values: Onset to arrival = 60 mins, Arrival to scan = 15 mins, Infarction = 1, NIHSS = 5, Prior disability level = 0, Precise onset time = 0, Use of AF anticoagulants = 0.}
+\caption{SHAP plots for the same patient attending 132 different hospitals. The patient has the following feature values: Onset to arrival = 60 mins, Arrival to scan = 15 mins, Infarction = 1, NIHSS = 5, Prior disability level = 0, Precise onset time = 0, Use of AF anticoagulants = 0. The plot shows how each patient feature value contributes to the final prediction of whether that patients is likely to receive thrombolysis. Hospitals coloured blue are \emph{benchmark} hospitals - the 30 hospitals with the highest predicted use of thrombolysis if all hospitals saw the same 10k patient cohort.}
 \label{fig:results_artifical_shap_waterfall_with_violin}
 \end{figure}
 
