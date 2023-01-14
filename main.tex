@@ -14,9 +14,9 @@
 \frenchspacing % No double spacing between sentences
 \linespread{1.2} % Set linespace
 \usepackage{authblk} % For author formatting
-
-
 \begin{document}
+
+
 
 \include{sections/1_title}
 
@@ -28,12 +28,10 @@
 
 %\tableofcontents
 %\newpage
-
-
-\include{sections/3_introduction}
-%\include{sections/4_methods}
-%\include{sections/5_results}
-%\include{sections/6_discussion}
+\input{sections/3_introduction}  % Use input isntead of include to avoid page break at end
+\input{sections/4_methods}
+\input{sections/5_results}
+\input{sections/6_discussion}
 
 \section{References}
 \bibliographystyle{naturemag}
@@ -44,7 +42,5 @@
 %\newpage
 % Use * to avoid numbering of section
 %\include{sections/appendix}
-
-
 
 \end{document}

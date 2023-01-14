@@ -8,7 +8,7 @@ Thrombolysis use in the original data varied between hospitals from 1.5\% to 24.
 
 \subsection{Feature selection}
 
-In order to provide a more explainable machine learning model, the number of features were restricted to those that provide most information regarding use of thrombolysis. 25 features were selected by identifying one feature at a time that led to greatest improvement in Receiver Operating Characteristic (ROC) Area Under Curve (AUC). ROC AUC was measured using stratified 5-fold cross validation.
+In order to provide a more explainable machine learning model, the number of features were restricted to those that provide most information regarding use of thrombolysis. 25 features were selected by identifying one feature at a time that led to greatest improvement in ROC AUC. ROC AUC was measured using stratified 5-fold cross validation.
 
 The best model with 1, 2, 5, 10, 25 \& all features (60 features before one-hot encoding of fields) had ROC AUCs of 0.715, 0.792, 0.891, 0.919, 0.923 \& 0.922. We selected 10 features for all subsequent work, which were:
 
@@ -78,7 +78,7 @@ Violin plots (figure \ref{fig:results_shap_violin} show the relationship between
 \begin{itemize}
     \item \emph{Stroke type}: The SHAP values for stroke types effectively eliminated any chance of receiving thrombolysis for non-ischaemic (haemorrhagic) stroke.
     \item \emph{Arrival-to-scan time}: The odds of receiving thrombolysis reduced by about 20 fold over the first 100 minutes of arrival to scan time.
-    \item \emph{Stroke severity (NIHSS)}: The odds of receiving thrombolysis was lowest at NIHSS 0, rose and peakws at NIHSS 15-25, and then fell again with higher stroke severity. The difference between minimum odds (at NIHSS 0) and maximum odds (at 15-25) of receiving thrombolysis was 30-35 fold.
+    \item \emph{Stroke severity (NIHSS)}: The odds of receiving thrombolysis was lowest at NIHSS 0, rose and peaks at NIHSS 15-25, and then fell again with higher stroke severity. The difference between minimum odds (at NIHSS 0) and maximum odds (at 15-25) of receiving thrombolysis was 30-35 fold.
     \item \emph{Stroke onset time type (precise vs. estimated)}: The odds of receiving thrombolysis were about 3 fold greater for precise onset time than estimated onset time.
     \item \emph{Disability level (Rankin) before stroke}: The odds of receiving thrombolysis fell about 5 fold between mRS 0 and 5.
 \end{itemize}
@@ -97,7 +97,7 @@ Violin plots (figure \ref{fig:results_shap_violin} show the relationship between
 
 When examining SHAP, we took the hospital SHAP values for patients attending each hospital. When we examined the hospital SHAP values only for patients attending each hospital, the hospital SHAP values ranged from -1.4 to +1.4. This range of SHAP (log odds) represents a 15 fold difference in odds of receiving thrombolysis between hopsitals (most are in the range of -1 to +1, but this still represents a 7-8 fold difference in odds of receiving thrombolysis).
 
-We compared the hospital SHAP value with the observed thrombolysis use at each hospital. Hospital SHAP correlated with observed thrombolysis rate with an r-squared of 0.582, suggesting that 58\% (P<0.0001) of the between-hospital variance in thrombolysis use may be explained by the hospitals' SHAP values, that is the hospitals' predisposition to use thrombolysis.
+We compared the hospital SHAP value with the observed thrombolysis use at each hospital. Hospital SHAP correlated with observed thrombolysis rate with an r-squared of 0.582, suggesting that 58\% (P$<$0.0001) of the between-hospital variance in thrombolysis use may be explained by the hospitals' SHAP values, that is the hospitals' predisposition to use thrombolysis.
 
 We used a 10k cohort of patients (not used in training the model) to predict between-hospital differences in use of thrombolysis if all hospitals had the same patients arriving. All patient feature values were kept constant, except the hospital coding was changed to mimic all patients attending each of the 132 hospitals. Predicted use of thrombolysis in the same 10k cohort ranged from 10\% to 45\%. We found that the median hospital SHAP value for the 10k patients correlated very closely with the predicted thrombolysis use in the 10k cohort at each hospital (r-squared = 0.947), confirming that the hospital SHAP is providing a direct insight into a hospital's propensity to use thrombolysis.
 
