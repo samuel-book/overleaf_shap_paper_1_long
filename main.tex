@@ -15,6 +15,8 @@
 \linespread{1.2} % Set linespace
 \usepackage{authblk} % For author formatting
 
+\DeclareUnicodeCharacter{2060}{\nolinebreak} % Prevent unicode (U+2060) error on local complile
+
 % Choose your own colour
 \usepackage{color}
 \newcommand{\rmenote}[2][\textcolor{red}{\dagger}]{\textcolor{red}{$#1$}\marginpar{\color{red}\raggedright\tiny$#1$ #2}}

@@ -8,7 +8,7 @@ Thrombolysis use in the original data varied between hospitals from 1.5\% to 24.
 
 \subsection{Feature selection}
 
-In order to provide a more explainable machine learning model, the number of features were restricted to those that provide most information regarding use of thrombolysis. 25 features were selected by identifying one feature at a time that led to greatest improvement in ROC AUC. ROC AUC was measured using stratified 5-fold cross validation.
+In order to provide a more explainable machine learning model, the features (measured patient characteristics)  were restricted to those that provide most information regarding use of thrombolysis. 25 features were selected by identifying one feature at a time that led to greatest improvement in ROC AUC. ROC AUC was measured using stratified 5-fold cross validation.
 
 The best model with 1, 2, 5, 10, 25 \& all features (60 features before one-hot encoding of fields) had ROC AUCs of 0.715, 0.792, 0.891, 0.919, 0.923 \& 0.922. We selected 10 features for all subsequent work, which were:
 
@@ -76,7 +76,7 @@ SHAP values provide the influence of each feature, as the change in log-odds of 
 Violin plots (figure \ref{fig:results_shap_violin} show the relationship between feature values and SHAP values for individual patients. Key observations are, with SHAP influence converted to from log-odds to odds:
 
 \begin{itemize}
-    \item \emph{Stroke type}: The SHAP values for stroke types effectively eliminated any chance of receiving thrombolysis for non-ischaemic (haemorrhagic) stroke.
+    \item \emph{Stroke type}: The SHAP values for stroke types show that the model effectively eliminated any chance of receiving thrombolysis for non-ischaemic (haemorrhagic) stroke.
     \item \emph{Arrival-to-scan time}: The odds of receiving thrombolysis reduced by about 20 fold over the first 100 minutes of arrival to scan time.
     \item \emph{Stroke severity (NIHSS)}: The odds of receiving thrombolysis was lowest at NIHSS 0, rose and peaks at NIHSS 15-25, and then fell again with higher stroke severity. The difference between minimum odds (at NIHSS 0) and maximum odds (at 15-25) of receiving thrombolysis was 30-35 fold.
     \item \emph{Stroke onset time type (precise vs. estimated)}: The odds of receiving thrombolysis were about 3 fold greater for precise onset time than estimated onset time.
@@ -143,7 +143,7 @@ We analysed the observed and predicted use of thrombolysis in subgroups of patie
 
 For the observed thrombolysis use, data was limited to the patients attending each hospital (and so the patient mix was different for each hospital). For the predicted thrombolysis use the predictions were based on the 10k patient cohort for all hospitals.
 
-Figure \ref{fig:results_boxplot} shows a boxplot of either observed and predicted use of thrombolysis, broken down by subgroup. The three subgroups of NIHSS $<$5, no precise stroke onset time, and pre-stroke mRS $>2$, all had reduced thrombolysis use, and combining these non-ideal features reduced thrombolysis use further. The observed and predicted thrombolysis use show the same general patterns, but some small differences existed: 1) The use of thrombolysis in *ideal* patients is a little low in the observed vs actual results (mean hospital thrombolysis use = 89\% vs 99\%), 2) The predicted results show a stronger effect of combining non-ideal features, 3) The observed thrombolysis rate shows higher between-hospital variation than the predicted thrombolysis rate. This may be partly explained by the observed thrombolysis rate being on different patients at each hospital, but may also be partly explained by actual use of thrombolysis being slightly more variable than predicted thrombolysis use (which will follow general hospital patterns, and will not include, for example, between-clinician variation at each hospital).
+Figure \ref{fig:results_boxplot} shows a boxplot of observed and predicted use of thrombolysis, broken down by subgroup. The three subgroups of NIHSS $<$5, no precise stroke onset time, and pre-stroke mRS $>2$, all had reduced thrombolysis use, and combining these non-ideal features reduced thrombolysis use further. The observed and predicted thrombolysis use show the same general results, but some small differences existed: 1) The use of thrombolysis in *ideal* patients is a little low in the observed vs actual results (mean hospital thrombolysis use = 89\% vs 99\%), 2) The predicted results show a stronger effect of combining non-ideal features, 3) The observed thrombolysis rate shows higher between-hospital variation than the predicted thrombolysis rate. This may be partly explained by the observed thrombolysis rate being on different patients at each hospital, but may also be partly explained by actual use of thrombolysis being slightly more variable than predicted thrombolysis use (which will follow general hospital patterns, and will not include, for example, between-clinician variation at each hospital).
 
 For both the predicted and observed thrombolysis, subgroup thrombolysis use tended to reduce in parallel (r-squared 0.221 - 0.308 in observed thrombolysis use, and 0.445 to 0.621 in the predicted thrombolysis use).
 
