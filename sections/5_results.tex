@@ -7,8 +7,7 @@ Thrombolysis use in the original data varied between hospitals from 1.5\% to 24.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Feature selection}
-
-In order to provide a more explainable machine learning model, the features (measured patient characteristics)  were restricted to those that provide most information regarding use of thrombolysis. 25 features were selected by identifying one feature at a time that led to greatest improvement in ROC AUC. ROC AUC was measured using stratified 5-fold cross validation.
+In order to provide a more explainable machine learning model, the features (patient characteristics) were restricted to those that provided the most information regarding use of thrombolysis. Using forward sequential feature selection (identifying one feature at a time that led to greatest improvement in ROC AUC to form a feature subset in a greedy fashion, with ROC AUC measured using stratified 5-fold cross validation), we selected the top 25 features.
 
 The best model with 1, 2, 5, 10, 25 \& all features (60 features before one-hot encoding of fields) had ROC AUCs of 0.715, 0.792, 0.891, 0.919, 0.923 \& 0.922. We selected 10 features for all subsequent work, which were:
 
@@ -39,28 +38,25 @@ The appendix contains further accuracy measures, and results for model validatio
 
 \subsection{An analysis of the characteristics of the most thrombolysable patient at each hospital}
 
-We identified the patient with the highest probability of receiving thrombolysis (taken from 5-fold combined test set results) at each hospital, and compared the feature values of those patients to:
-
+We identified the patient \kpFIXME{that the model predicted had} the highest probability of receiving thrombolysis (taken from 5-fold combined test set results) at each hospital, and compared the feature values of those 132 patients to:
 \begin{itemize}
-    \item All patients
-    \item All patients who had received thrombolysis
-    \item All patients who had not received thrombolysis
-\end{itemize}
+\item All patients
+\item All patients who had received thrombolysis
+\item All patients who had not received thrombolysis
 
-As seen in figure \ref{fig:results_most_thrombolysable}, Compared with the other groups, the most thrombolysable patients 1) Had shorter arrrival-to-scan times, 2) Had an infarction stroke type, 3) Had stroke severity with NIHR 5-25, 4) Had a precise onset time, 5) Had lower pre-stroke disability, 6) Were not taking anticoagulant medication, 7) Had shorter onset-to-arrival times, 8) Did not have onset during sleep, 9) Were younger.
+As seen in figure \ref{fig:results_most_thrombolysable}, compared with the other groups, the 132 most thrombolysable patients 1) Had shorter arrival-to-scan times, 2) Had an infarction stroke type, 3) Had stroke severity with NIHSS 5-25, 4) Had a precise onset time, 5) Had lower pre-stroke disability, 6) Were not taking anticoagulant medication, 7) Had shorter onset-to-arrival times, 8) Did not have onset during sleep, 9) Were younger.
 
 \begin{figure}
 \centering
 \includegraphics[width=1.0\textwidth]{./images/02a_most_thrombolsyable_violin}
-\caption{Violin plots comparing feature values between the patient with the highest probability of thrombolysis at each hospital with all patients, all patients who had received thrombolysis, and all patients who had not received thrombolysis. Horizontal lines show the mean value of each group.}
+\caption{Violin plots comparing feature values between the patient with the highest probability of thrombolysis at each hospital ("Most thrombolysable") with: 1) all patients, 2) all patients who had received thrombolysis, and 3) all patients who had not received thrombolysis. Horizontal lines show the mean value of each group.}
 \label{fig:results_most_thrombolysable}
 \end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Waterfall plots of SHAP values}
-
-Waterfall plots show the influence of features for an individual prediction. We generally handle SHAP values as how they affect log odds of receiving thrombolysis, but for individual predictions, probability plots are more intuitive. Figure \ref{fig:results_waterfall} shows an example of a patient with low (top) and high (bottom) probability of receiving thrombolysis. The model starts with a base prediction of a 24\% probability of receiving thrombolysis, before feature values are taken into account. For the patient with a low probability of receiving thrombolysis, the two most influential features reducing the probability of receiving thrombolysis are a long arrival-to-scan time (138 minutes) and a low stroke severity (NIHSS=2). For the patient with a high probability of receiving thrombolysis, the two most influential features increasing the probability of receiving thrombolysis are a short arrival-to-scan time (17 minutes) and a moderate stroke severity (NIHSS=14). 
+Waterfall plots show the influence of features for an individual prediction \kpFIXME{(better to say: "an individual patient"?)}. We generally handle SHAP values as how they affect log odds of receiving thrombolysis, but for individual predictions, probability plots are more intuitive. Figure \ref{fig:results_waterfall} shows an example of a patient with low (top) and high (bottom) probability of receiving thrombolysis. The model starts with a base prediction of a 24\% probability of receiving thrombolysis, before feature values are taken into account. For the patient with a low probability of receiving thrombolysis, the two most influential features reducing the probability of receiving thrombolysis are a long arrival-to-scan time (138 minutes) and a low stroke severity (NIHSS=2). For the patient with a high probability of receiving thrombolysis, the two most influential features increasing the probability of receiving thrombolysis are a short arrival-to-scan time (17 minutes) and a moderate stroke severity (NIHSS=14). 
 
 \begin{figure}
 \centering
@@ -73,21 +69,21 @@ Waterfall plots show the influence of features for an individual prediction. We 
 
 SHAP values provide the influence of each feature, as the change in log-odds of receiving thrombolysis. SHAP values expressed as log-odds are additive, that is the final log-odds of receiving thrombolysis is the sum of the base model prediction (the log-odds of receiving thrombolysis before feature influences are considered), and the SHAP values for each feature (these include interactions with other features).
 
-Violin plots (figure \ref{fig:results_shap_violin} show the relationship between feature values and SHAP values for individual patients. Key observations are, with SHAP influence converted to from log-odds to odds:
+Violin plots (figure \ref{fig:results_shap_violin}) show the relationship between feature values and SHAP values for \kpFIXME{50k?} individual patients. Key observations are (with SHAP influence converted to from log-odds to odds):
 
 \begin{itemize}
     \item \emph{Stroke type}: The SHAP values for stroke types show that the model effectively eliminated any chance of receiving thrombolysis for non-ischaemic (haemorrhagic) stroke.
     \item \emph{Arrival-to-scan time}: The odds of receiving thrombolysis reduced by about 20 fold over the first 100 minutes of arrival to scan time.
-    \item \emph{Stroke severity (NIHSS)}: The odds of receiving thrombolysis was lowest at NIHSS 0, rose and peaks at NIHSS 15-25, and then fell again with higher stroke severity. The difference between minimum odds (at NIHSS 0) and maximum odds (at 15-25) of receiving thrombolysis was 30-35 fold.
+    \item \emph{Stroke severity (NIHSS)}: The odds of receiving thrombolysis was lowest at NIHSS 0, increased and peaks at NIHSS 15-25, and then fell again with higher stroke severity (NIHSS above 25). The difference between minimum odds (at NIHSS 0) and maximum odds (at 15-25) of receiving thrombolysis was 30-35 fold.
     \item \emph{Stroke onset time type (precise vs. estimated)}: The odds of receiving thrombolysis were about 3 fold greater for precise onset time than estimated onset time.
-    \item \emph{Disability level (Rankin) before stroke}: The odds of receiving thrombolysis fell about 5 fold between mRS 0 and 5.
+    \item \emph{Disability level (modified Rankin Scale, mRS) before stroke}: The odds of receiving thrombolysis fell about 5 fold between mRS 0 and 5.
 \end{itemize}
 
 
 \begin{figure}
 \centering
 \includegraphics[width=1\textwidth]{./images/03_xgb_10_features_thrombolysis_shap_violin}
-\caption{Violin plots showing the relationship between SHAP values and feature values. The horizontal line shows the median SHAP value. SHAP values were taken from the training set of the first of 5 k-fold train/test splits.}
+\caption{Violin plots showing the relationship between SHAP values and feature values. The horizontal line shows the median SHAP value. SHAP values were taken from the \kpFIXME{50k? patients in the }training set of the first of 5 k-fold train/test splits.}
 \label{fig:results_shap_violin}
 \end{figure}
 
@@ -106,14 +102,14 @@ We used a 10k cohort of patients (not used in training the model) to predict bet
 
 \subsection{How individual hospitals may modify general patterns of thrombolysis}
 
-SHAP values are composed of a \emph{main effect} of a feature, and \emph{interaction effects} with other features. The main effect captures the general pattern use of thrombolysis across hospitals independent of other feature values, and independent of which hospital a patient attended. The interaction may either strengthen or attenuate the main effect. For example the main effect of knowing a stroke onset time precisely is to increase the odds of receiving thrombolysis, as indicated by a positive SHAP values. Individual hospitals, in addition to having a general effect of influencing the odds of receiving thrombolysis, may selectively adjust the influence of other features such knowing the stroke onset time precisely, with some teams strengthening the effect, leading to a larger difference in odds of receiving thrombolysis depending on whether stroke onset time is known precisely, whereas other teams will attenuate the main effect, leading to a smaller difference in odds of receiving thrombolysis.
+The SHAP value \kpFIXME{for each feature} is composed of 1) the features \emph{main effect} and 2) all of the pair-wise \emph{interaction effects} with each of the other features. The features main effect captures the general pattern of thrombolysis use (in relation to the feature value) across hospitals independent of other feature values, and independent of which hospital a patient attended. Then each interaction effect may either strengthen or attenuate the main effect. For example, the main effect of knowing a stroke onset time precisely is to increase the odds of receiving thrombolysis, as indicated by a positive SHAP value. Individual hospitals (in addition to the hospital feature having it's own main effect of influencing the odds of receiving thrombolysis) has their pair-wise interaction effect with each feature, such as on the effect of knowing a stroke onset time precisely. The top line of graphs in Figure \ref{fig:results_shap_hosp_intercations} show that some hospitals (such as "FAJKD7118X") attenuate the main effect, leading to a smaller difference in odds of receiving thrombolysis, whereas some hospitals (such as "HZNVT9936G") strengthening the effect, leading to a larger difference in odds of receiving thrombolysis depending on whether stroke onset time is known precisely.
 
-Figure \ref{fig:results_shap_hosp_intercations} shows examples of hospitals which either attenuated or strengthened the main effect of whether a stroke onset time is known precisely, the effect of stroke severity, or the effect of pre-stroke disability. These SHAP interactions revealed how individual hospitals may differ in the influence of specific patient features.
+The plots in the first column of Figure \ref{fig:results_shap_hosp_intercations} shows the main effect for three features (precise onset time, stroke severity, and prior disability), followed by examples of hospitals which either attenuated (column two) or strengthened (column three) the main effect. These SHAP interactions revealed how individual hospitals may differ in the influence of specific patient features.
 
 \begin{figure}
 \centering
 \includegraphics[width=1.0\textwidth]{./images/12aa_three_way_shap_adjustment}
-\caption{Adjustment of SHAP main effects by individual hospital. Each row first (left) shows the main SHAP effect of the feature, then (middle) a hospital where the SHAP interaction attenuates the main effect, and finally (right) a hospital where the SHAP interaction strengthens the main effect. Top row (red): main SHAP effect and adjusted SHAP values for precise stroke onset time. Middle row (green): main SHAP effect and adjusted SHAP values for stroke severity. Bottom row (blue): main SHAP effect and adjusted SHAP values for pre-stroke disability.}
+\caption{Adjustment of SHAP main effects by individual hospital. Each row first (left) shows the SHAP main effect of the feature, then (middle) a hospital where the SHAP interaction attenuates the main effect, and finally (right) a hospital where the SHAP interaction strengthens the main effect. Top row (red): SHAP main effect and adjusted SHAP values for precise stroke onset time. Middle row (green): SHAP main effect and adjusted SHAP values for stroke severity. Bottom row (blue): SHAP main effect and adjusted SHAP values for pre-stroke disability.}
 \label{fig:results_shap_hosp_intercations}
 \end{figure}
 
@@ -121,29 +117,31 @@ Figure \ref{fig:results_shap_hosp_intercations} shows examples of hospitals whic
 
 \subsection{Subgroup analysis}
 
-We analysed the observed and predicted use of thrombolysis in subgroups of patients. Those groups were:
+We analysed the observed and predicted use of thrombolysis in these four subgroups of patients:
 
-\begin{itemize}
-  \item An 'ideal' thrombolysable patient:
+\begin{enumerate}
+  \item An 'ideally' thrombolysable patient:
   \begin{itemize}
-    \item Stroke severity NIHSS in range 10-25
-    \item Arrival-to-scan time $<$30 minutes
-    \item Stroke type = infarction
-    \item Precise onset time = True
-    \item Prior disability level (mRS) = 0
-    \item AF anticoagulants = False
-    \item Onset-to-arrival time $<$90 minutes
-    \item Age $<$80 years
-    \item Onset during sleep = False
+    \item Mid-level stroke severity (NIHSS in range 10-25)
+    \item Short arrival-to-scan time (less than 30 minutes)
+    \item Stroke caused by infarction
+    \item Precise stroke onset time known
+    \item No pre-stroke disability (mRS 0)
+    \item Not take any atrial fibrillation anticoagulants
+    \item Short onset-to-arrival time (less than 90 minutes)
+    \item Younger than 80 years old
+    \item Onset not during sleep
   \end{itemize}
-  \item Mild stroke severity (NIHSS $<$5)
-  \item No precise onset time
-  \item Existing pre-stroke disability (mRS $>$2)
-\end{itemize}
+  
+  The 'ideally' thrombolysable patient with one non-ideal feature:
+  \item with a mild stroke severity (NIHSS less than 5)
+  \item with no precise stroke onset time known
+  \item with pre-stroke disability (mRS greater than 2)
+\end{enumerate}
 
-For the observed thrombolysis use, data was limited to the patients attending each hospital (and so the patient mix was different for each hospital). For the predicted thrombolysis use the predictions were based on the 10k patient cohort for all hospitals.
+For the observed thrombolysis use, data was limited to the patients attending each hospital (and so the patient mix was different for each hospital). For the predicted thrombolysis use the predictions were based on the 10k patient cohort for all hospitals (and so that patient mix was the same for each hospital).
 
-Figure \ref{fig:results_boxplot} shows a boxplot of observed and predicted use of thrombolysis, broken down by subgroup. The three subgroups of NIHSS $<$5, no precise stroke onset time, and pre-stroke mRS $>2$, all had reduced thrombolysis use, and combining these non-ideal features reduced thrombolysis use further. The observed and predicted thrombolysis use show the same general results, but some small differences existed: 1) The use of thrombolysis in *ideal* patients is a little low in the observed vs actual results (mean hospital thrombolysis use = 89\% vs 99\%), 2) The predicted results show a stronger effect of combining non-ideal features, 3) The observed thrombolysis rate shows higher between-hospital variation than the predicted thrombolysis rate. This may be partly explained by the observed thrombolysis rate being on different patients at each hospital, but may also be partly explained by actual use of thrombolysis being slightly more variable than predicted thrombolysis use (which will follow general hospital patterns, and will not include, for example, between-clinician variation at each hospital).
+Figure \ref{fig:results_boxplot} shows a boxplot of observed and predicted use of thrombolysis, broken down by subgroup. The three subgroups of patients with one non-ideal feature (NIHSS $<$5, no precise stroke onset time, pre-stroke mRS $>2$) all had reduced thrombolysis use, and combining these non-ideal features reduced thrombolysis use further. The observed and predicted thrombolysis use show the same general results, but some small differences existed: 1) The use of thrombolysis in \emph{ideal} patients is a little low in the observed vs actual results (mean hospital thrombolysis use = 89\% vs 99\%), 2) The predicted results show a stronger effect of combining non-ideal features, 3) The observed thrombolysis rate shows higher between-hospital variation than the predicted thrombolysis rate. This may be partly explained by the observed thrombolysis rate being on different patients at each hospital, but may also be partly explained by actual use of thrombolysis being slightly more variable than predicted thrombolysis use (which will follow general hospital patterns, and will not include, for example, between-clinician variation at each hospital).
 
 For both the predicted and observed thrombolysis, subgroup thrombolysis use tended to reduce in parallel (r-squared 0.221 - 0.308 in observed thrombolysis use, and 0.445 to 0.621 in the predicted thrombolysis use).
 
@@ -158,7 +156,9 @@ For both the predicted and observed thrombolysis, subgroup thrombolysis use tend
 
 \subsection{Comparing predicted thrombolysis decisions across hospitals, using artificial patients}
 
-Artificial patients may be used to explore how decisions vary between hospitals, and how changing patient characteristics away from an \emph{ideally} thrombolysable patients, affects hospitals' decisions to use thrombolysis. For example, a patient with moderate/severe stroke severity (NIHSS=15), infarction, having a precise onset time (and not during sleep), onset-to-arrival of 60 minutes, arrival to scan of 15 minutes, no prior disability, aged 72, and not using anticoagulants for atrial fibrillation, was predicted to receive thrombolysis at 131/132 hospitals. But if we took exactly that same patient and changed stroke severity to 5, with the patient also having a non-precise onset time, that patient would be expected to receive thrombolysis in only 35\% of hospitals, with a clear divide between the benchmark hospitals (90\% predicted to give thrombolysis) and non-benchmark hospitals (19\% predicted to give thrombolysis). Figure \ref{fig:results_artifical_shap_waterfall_with_violin} shows SHAP  plots for this patient attending each of 132 hospitals.
+An artificial patient may be used to explore how decisions vary between hospitals for the same patient, and how changing patient characteristics away from what has been identified as an \emph{ideally} thrombolysable patient, affects hospitals' decisions to use thrombolysis. For this example, we more precisely define our \emph{ideally} thrombolysable patient, as a moderate/severe stroke severity (NIHSS 15), infarction, with a precise onset time (and not during sleep), an onset-to-arrival of 60 minutes, an arrival-to-scan of 15 minutes, no prior disability, aged 72, and not using anticoagulants for atrial fibrillation. This \emph{ideally} thrombolysable patient was predicted to receive thrombolysis at 131/132 hospitals. By just changing two characteristics (a stroke severity of NIHSS 5 and a non-precise stroke onset time), that patient would now be expected to receive thrombolysis in only 35\% of hospitals, with a clear divide between the top 30 hospitals with the highest thrombolysis rate (90\% predicted to give thrombolysis) and the rest with a lower thrombolysis rate (19\% predicted to give thrombolysis). Figure \ref{fig:results_artifical_shap_waterfall_with_violin} shows how the model predicts how each of the 132 hospitals treats the feature values for this patient, to arrive at the individual probability of receiving thrombolysis at each hospital (3 - 88\%).
+
+\kpFIXME{Not yet mentioned, or defined, a benchmark hospital. Maybe scrap that term from this paper?}
 
 \begin{figure}
 \centering

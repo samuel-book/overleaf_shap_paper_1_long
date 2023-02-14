@@ -1,0 +1,142 @@
+\renewcommand{\thefootnote}{\alph{footnote}} % Use letters for footnotes
+
+\section{Methods}
+
+All modelling and analysis was performed using Python in Jupyter Notebooks \cite{kluyver_jupyter_2016}, with general analysis and plotting performed using NumPy \cite{harris_array_2020}, Pandas \cite{mckinney-proc-scipy-2010}, Scikit-Learn  \cite{pedregosa_scikit-learn_2011}, and Matplotlib \cite{hunter_matplotlib_2007}. 
+
+Further details of methods may also be found in the supplementary material. 
+
+All code, with detailed results, used is available online at \url{https://samuel-book.github.io/samuel_shap_paper_1/} (DOI: 10.5281/zenodo.7540391). 
+
+\subsection{Data}
+
+Data was retrieved for 246,676 emergency stroke admissions to \kpFIXME{the 132} acute stroke teams in England and Wales between 2016 and 2018 (three full years), obtained from the Sentinel Stroke National Audit (SSNAP \footnote{https://www.strokeaudit.org/}). Data fields are provided for the acute phase of the stroke pathway, including our target feature: \emph{receive thrombolysis}, (full details of the data fields obtained are provided in the appendix). 88,928 of these patients arrived within 4 hours of known stroke onset\kpFIXME{, and were used in this modelling study (as they represent the patients that had time left to treat)}. 132 acute stroke hospitals were included. No identifiable patient or hospital information was obtained, and anonymised hospital names were provided.
+
+ SSNAP has near-complete coverage of all acute stroke admissions in the UK (outside Scotland). All hospitals admitting acute stroke participate in the audit, and year-on-year comparison with Hospital Episode Statistics \footnote{https://digital.nhs.uk/data-and-information/data-tools-and-services/data-services/hospital-episode-statistics} confirms estimated case ascertainment of 95\% of coded cases of acute stroke.
+
+The NHS Health Research Authority decision tool \footnote{http://www.hra-decisiontools.org.uk/research/} was used to confirm that ethical approval was not required to access the data. Data access was authorised by the Healthcare Quality Improvement Partnership (HQIP)\footnote{https://www.hqip.org.uk/} (reference HQIP303). 
+
+\subsection{Machine learning models (to predict thromboylsis use)}
+We used an \emph{eXtreme Gradient Boosting model \cite{chen_xgboost_2016}} (`XGBoost`) to predict the probability of use of thrombolysis for each patient from their other feature values.
+
+\subsubsection{Feature selection}
+First, in order to provide a more understandable and explainable machine learning model, we restricted the features (patient characteristics) that were used in the model to those that provided the most information regarding use of thrombolysis. 
+
+Features were selected one at a time from the 60 original features in the SSNAP dataset (before one-hot encoding) by forward-feature selection (identifying one feature at a time that led to the greatest improvement in accuracy). This formed a feature subset in a greedy fashion. Model accuracy was measured by Receiver Operating Characteristic (ROC) Area Under Curve (AUC), using 5-fold cross-validation. We repeated this process to identify the top 25 features.
+
+%In order to provide a more explainable machine learning model, the features (patient characteristics) were restricted to those that provided the most information regarding use of thrombolysis. Using forward sequential feature selection (identifying one feature at a time that led to greatest improvement in ROC AUC to form a feature subset in a greedy fashion, with ROC AUC measured using stratified 5-fold cross validation), we selected the top 25 features.
+
+\subsubsection{Model accuracy}
+Model accuracy, ROC AUC, sensitivity and specificity were measured using stratified 5-fold cross validation. Further accuracy measures are in the appendix (validation of hospital thrombolysis curves, evaluation of variation in model prediction using bagging, learning rates, model calibration, and
+fine-tuning of model regularisation).
+
+\subsubsection{The machine learning models}
+
+For the different analysis included in this paper, we trained three models
+\begin{enumerate}
+    \item {The \emph{k-fold model}}
+    
+    Description: Train model using all 88,928 patients in a 5-fold cross-validation.
+    
+    Reason: Robustly test the accuracy of the model
+    \item {The \emph{all data model}}
+    
+    Description: Train a single model using all 88,928 patients.
+    
+    Reason: Having understood the model accuracy (from the \emph{k-fold model}), use all the data to create a single model that we will understand and explain (removes barrier of having five separate models).
+    \item {The \emph{10k holdout model}}
+
+    Description: Select 10k patients (stratified by hospital and thrombolysis use) to keep in a hold back dataset, and train a single model using the remaining 78,928 patients. 
+    
+    Reason: By passing all of the 10k patients (that were held back from the training process) though the model, whilst setting the hospital ID to each hospital in turn, we can remove the \emph{patient effect} (by using the same patient mix at each hospital) to obtain a purer \emph{hospital effect} result.
+\end{enumerate}
+
+For all three case, a single model was fitted for all hospitals, with hospital attended being one patient feature (represented as a one-hot encoded feature).
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{Characteristics of the most thrombolysable patient (at each hospital)}
+We identified the patient at each hospital that the model predicted had the highest probability of receiving thrombolysis (using the combined test set results from the \emph{k-fold model}), and compared the feature values of those 132 patients to:
+\begin{itemize}
+\item All patients
+\item All patients who had received thrombolysis
+\item All patients who had not received thrombolysis
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Variation in hospital thrombolysis use for patient subgroups}
+
+We analysed the observed and predicted use of thrombolysis in four subgroups of patients. One 'ideally' thrombolysable patient, and three 'sub-optimal' thrombolysable patients with one non-ideal feature. Defined as:
+
+\begin{enumerate}
+  \item An 'ideally' thrombolysable patient:
+  \begin{itemize}
+    \item Mid-level stroke severity (NIHSS in range 10-25)
+    \item Short arrival-to-scan time (less than 30 minutes)
+    \item Stroke caused by infarction
+    \item Precise stroke onset time known
+    \item No pre-stroke disability (mRS 0)
+    \item Not take any atrial fibrillation anticoagulants
+    \item Short onset-to-arrival time (less than 90 minutes)
+    \item Younger than 80 years old
+    \item Onset not during sleep
+  \end{itemize}
+  \item The 'ideally' thrombolysable patient with a mild stroke severity (NIHSS less than 5)
+  \item The 'ideally' thrombolysable patient with no precise stroke onset time known
+  \item The 'ideally' thrombolysable patient with pre-stroke disability (mRS greater than 2)
+\end{enumerate}
+
+The observed thrombolysis use at each hospital was taken from the SSNAP dataset, with data limited to the patients that matched the patient characteristics and attending each hospital (and so the patient mix was different for each hospital).
+
+To provide a purer \emph{hospital effect} result, we removed the \emph{patient effect} by also providing a predicted thrombolysis use for the same patient mix (10k patient cohort) at each hospital by using the \emph{10k holdout model}.
+%To provide a purer \emph{hospital effect} result, we removed the \emph{ patient effect}) by also providing a predicted thrombolysis use for the same patient mix at each hospital. Using the model trained on 78,928 patients, pass all of the 10k patients (that were held back from the training process) though the model, whilst setting the hospital ID to each hospital in turn.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsection{Waterfall plots of SHAP values}
+\subsection{SHapley Additive exPlanation values}
+SHAP provides a measure of the contribution of each patient feature value to the final predicted probability of receiving thrombolysis for that individual. SHAP values provide the influence of each feature, as the change in log-odds of receiving thrombolysis. SHAP values expressed as log-odds are additive, such that the final log-odds of receiving thrombolysis is the sum of the base model prediction (the log-odds of receiving thrombolysis before feature influences are considered), and the SHAP values for each feature (which are comprised of the features \emph{main effect} and all of the pairwise \emph{interaction} effects with each of the other features). 
+
+For calculation of SHAP values we used the Shap library \cite{lundberg_unified_2017}, and we make use of their waterfall plots (tailored to our needs) to visualise the SHAP values for individual patients.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The relationship between feature values and the odds of receiving thrombolysis (SHAP values)}
+
+For each feature, compare the distribution of SHAP values for patients with the same feature value (using values from the \emph{k-fold model} for the first k-fold training set, containing 71,142 patients).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\subsection{How the hospital SHAP value compares with the hospitals use of thrombolysis}
+
+Compare the hospital SHAP value for patients attending each hospital (using values from the \emph{all data model}) with the hospitals observed thrombolysis use. Each hospital will have their own patient mix.
+
+To provide a purer \emph{hospital effect} result, also compare the hospital SHAP value for the same 10k patient cohort attending each hospital, with the hospitals predicted thrombolysis use for this 10k patient cohort (using values from the \emph{10k holdout model}).
+
+%To provide a more pure \emph{hospital effect} result, we removed the \emph{ patient effect}) by also comparing the hospital SHAP value from the model trained on 78,928 patients and pass all of the 10k patients (that were held back from the training process) though the model, whilst setting the hospital ID to each hospital in turn.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\subsection{How individual hospitals may modify general patterns of thrombolysis}
+
+The SHAP main effect of a feature captures the general pattern of thrombolysis use (in relation to the feature value), then each SHAP interaction effect with another feature may either strengthen or attenuate the main effect. We will look at a features main effect in isolation, and also in combination with the interaction effect with an individual hospital, to understand how individual hospitals respond to feature values differently in terms of their clinical decision to use thrombolysis. Use values from the \emph{all data model}.
+
+%In addition to the overall SHAP value for each feature, we can access its individual components: 1) the features \emph{main effect} and 2) all of the pair-wise \emph{interaction effects} with each of the other features. The features main effect captures the general pattern of thrombolysis use (in relation to the feature value), then each interaction effect may either strengthen or attenuate the main effect. We will use this to 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%\subsection{Comparing hospital decision making }
+%\subsubsection{Method 1: 10k patient cohort}
+
+%\kpFIXME{KP comment: I edited this paragraph, I got confused with "comparing thrombolysis use between methods". Sorry if I misunderstood and this now does not represent what you were trying to say}
+%To compare thrombolysis use between hospitals, we separated out 10k patients (chosen at random) which were held back from the training phase. The model was trained on the remaining 78,928 real patients (with these patients attending their actual hospital). The use of thrombolysis at each hospital was then predicted for the same 10k cohort of patients (those that were held back from the training phase) by passing all of the 10k patients though the model whilst setting the hospital ID to each hospital in turn.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\subsubsection{Method 2: Artificial patients}
+%\kpFIXME{KP comment: I edited this paragraph, I got confused with "comparing thrombolysis use between methods". Sorry if I misunderstood and this now does not represent what you were trying to say}
+%Another method to compare thrombolysis use between hospitals, we constructed artificial patients and passed those through the model for each hospital. When investigating artificial patients, we trained the model on all of the 88,928 real patients. 
+
+\subsection{Comparing predicted thrombolysis decisions across hospitals, using artificial patients}
+
+An artificial patient is created by defining all of the patients feature values, thus creating a patient that may not be present in the original dataset, or indeed exist in "real life". Artificial patients may be used to explore how decisions vary between hospitals for the same (very specific) patient by passing them through the model for each hospital. When investigating artificial patients, we use the \emph{all data model}. Here we define, and use, two artificial patients: 
+\begin{enumerate}
+    \item \emph{Ideally thrombolysable patient}: a moderate/severe stroke severity (NIHSS 15), with a precise onset time (and not during sleep), infarction, an onset-to-arrival of 60 minutes, an arrival-to-scan of 15 minutes, no prior disability, aged 72, and not using anticoagulants for atrial fibrillation.
+    \item \emph{Likely thrombolysable patient}: a mild stroke severity (NIHSS 5), with a non-precise onset time (and not during sleep), infarction, an onset-to-arrival of 60 minutes, an arrival-to-scan of 15 minutes, no prior disability, aged 72, and not using anticoagulants for atrial fibrillation. 
+\end{enumerate}
+
+Note that only the first two characteristics are different between these two artificial patients.

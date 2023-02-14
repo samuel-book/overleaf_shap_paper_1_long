@@ -14,8 +14,8 @@
 \frenchspacing % No double spacing between sentences
 \linespread{1.2} % Set linespace
 \usepackage{authblk} % For author formatting
-\usepackage{lmodern} % A scalable font
-
+\usepackage{lmodern} % A scalable font - avoids erros due to non-sclabale fonts
+\usepackage{subcaption} % Allows use of subfigures
 \DeclareUnicodeCharacter{2060}{\nolinebreak} % Prevent unicode (U+2060) error on local complile
 
 % Choose your own colour
@@ -43,8 +43,8 @@
 %\tableofcontents
 %\newpage
 \input{sections/3_introduction}  % Use input instead of include to avoid page break at end
-\input{sections/4_methods}
-\input{sections/5_results}
+\input{sections/4_methods_kp}
+\input{sections/5_results_kp}
 \input{sections/6_discussion}
 
 \section{References}
