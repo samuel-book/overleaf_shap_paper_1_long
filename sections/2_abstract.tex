@@ -4,7 +4,7 @@
 
 \emph{Design}: Machine learning was applied to the sentinel stroke national audit programme (SSNAP)  data set, to learn which patients in each hospital would likely receive thrombolysis.
 
-\emph{Setting}: All (n=132) hospitals providing emergency stroke care in England and Wales. All hospitals providing emergency stroke care in England and Wales. Thrombolysis use in patients arriving within 4 hours of known stroke onset ranged from 7\% to 49\% between hospitals.
+\emph{Setting}: All hospitals (n=132) providing emergency stroke care in England and Wales. Thrombolysis use in patients arriving within 4 hours of known or estimated stroke onset ranged from 7\% to 49\% between hospitals.
 
 \emph{Participants}: 88,928 stroke patients recorded in the national stroke audit who arrived at hospital within 4 hours of stroke onset, from 2016 to 2018.
 
@@ -12,6 +12,6 @@
 
 \emph{Main Outcome Measures}: Shapley (SHAP) values, providing estimates of how patient characteristics, and hospital identity, influence the odds of receiving thrombolysis.
 
-\emph{Results}: The XGBoost/SHAP model revealed that the odds of receiving thrombolysis reduced 20 fold over the first 100 minutes of arrival-to-scan time, varied 30 fold depending on stroke severity, reduced 3 fold when the stroke onset time was not precisely known, fell 5 fold with increasing pre-stroke disability, and varied 15 fold between hospitals. The hospital identification (hospital SHAP value) explained 58\% of the variance in between-hospital thrombolysis use. Compared with hospitals with higher thrombolysis use, hospitals with lower use were particularly less likely to give thrombolysis to patients with milder strokes, prior disability, or patients with imprecise onset time.
+\emph{Results}: The XGBoost/SHAP model revealed that the odds of receiving thrombolysis reduced 20 fold over the first 100 minutes of arrival-to-scan time, varied 30 fold depending on stroke severity, reduced 3 fold with estimated rather than precise stroke onset time, fell 5 fold with increasing pre-stroke disability, and varied 15 fold between hospitals. The hospital identifier (hospital SHAP value) explained the majority (58\%) of the variance in between-hospital thrombolysis use. Compared with hospitals with higher thrombolysis use, hospitals with lower use were particularly less likely to give thrombolysis to patients with milder strokes, prior disability, or patients with estimated onset time.
 
 \emph{Conclusions}: Using explainable machine learning, we have identified that the majority of the between-hospital variation in thrombolysis use in England and Wales, for patients arriving with time to thrombolyse, may be explained by differences in hospital predisposition to use thrombolysis.
