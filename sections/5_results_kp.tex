@@ -2,7 +2,7 @@
 
 \subsection{Variation in observed hospital thrombolysis use}
 
-Thrombolysis use in the original data varied between hospitals from 1.5\% to 24.3\% of all patients, and 7.3\% to 49.7\% of patients arriving within 4 hours of known stroke onset.
+Thrombolysis use in the original data varied between hospitals from 1.5\% to 24.3\% of all patients, and 7.3\% to 49.7\% of patients arriving within 4 hours of known (precise or estimated) stroke onset.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -25,7 +25,7 @@ The best model with 1, 2, 5, 10, 25 \& all 60 original features had ROC AUCs of 
 
 These were not necessarily the 10 most important features, as another highly correlated feature may also have been important, but if a feature is highly correlated with an already chosen feature, it will add less additional value.
 
-Correlations between the 10 features were measured using coefficients of determination (r-squared). All r-squared were less than 0.05 except 1) age and prior disability level (r-squared 0.146), and 2) onset during sleep and precise onset time (r-squared 0.078).
+Correlations between the 10 features were measured using coefficients of determination (r-squared). All r-squared were less than 0.05 except 1. age and prior disability level (r-squared 0.146), and 2. onset during sleep and precise onset time (r-squared 0.078).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -33,13 +33,13 @@ Correlations between the 10 features were measured using coefficients of determi
 
 Model accuracy was measured using stratified 5-fold cross validation. Overall accuracy was 85.0\% (83.9\% sensitivity and specificity could be achieved simultaneously). The ROC AUC was 0.918. The model predicted hospital thrombolysis use at each hospital with very good accuracy (r-squared = 0.977).
 
-The appendix contains further accuracy measures, and results for model validation of hospital thrombolysis curves, evaluation of variation in model prediction using bagging, learning rates, model calibration, and fine-tuning of model regularisation.
+The appendix contains further model accuracy analysis (including patient subgroup analysis).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Characteristics of the most thrombolysable patient (at each hospital)}
 
-As seen in figure \ref{fig:results_most_thrombolysable}, compared with the other groups, the 132 most thrombolysable patients had:
+As seen in Figure \ref{fig:results_most_thrombolysable}, compared with the other groups, the 132 most thrombolysable patients had:
 \begin{itemize}
     \item shorter arrival-to-scan times
     \item an infarction stroke type
@@ -78,7 +78,7 @@ For both the predicted and observed thrombolysis, subgroup thrombolysis use tend
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Individual patient SHAP values}
-SHAP values are presented as how they affect log odds of receiving thrombolysis, but for individual predictions, probability plots are more intuitive. Figure \ref{fig:results_waterfall} shows waterfall plots for an example of a patient with low (top) and high (bottom) probability of receiving thrombolysis. Waterfall plots show the influence of features for an individual prediction (in our case, patient). The SHAP model starts with a base prediction of a 24\% probability of receiving thrombolysis, before feature values are taken into account. For the patient with a low probability of receiving thrombolysis, the two most influential features reducing the probability of receiving thrombolysis were a long arrival-to-scan time (138 minutes) and a low stroke severity (NIHSS=2). For the patient with a high probability of receiving thrombolysis, the two most influential features increasing the probability of receiving thrombolysis were a short arrival-to-scan time (17 minutes) and a moderate stroke severity (NIHSS=14). 
+SHAP values are presented as how they affect log odds of receiving thrombolysis, but for individual predictions, probability values are more intuitive. Figure \ref{fig:results_waterfall} shows waterfall plots for an example of a patient with low (top) and high (bottom) probability of receiving thrombolysis. Waterfall plots show the influence of features for an individual prediction (in our case, patient). The SHAP model starts with a base prediction of a 24\% probability of receiving thrombolysis, before feature values are taken into account. For the patient with a low probability of receiving thrombolysis, the two most influential features reducing the probability of receiving thrombolysis were a long arrival-to-scan time (138 minutes) and a low stroke severity (NIHSS=2). For the patient with a high probability of receiving thrombolysis, the two most influential features increasing the probability of receiving thrombolysis were a short arrival-to-scan time (17 minutes) and a moderate stroke severity (NIHSS=14). 
 
 \begin{figure}[!h]
 \centering
@@ -99,7 +99,7 @@ Figure \ref{fig:results_shap_violin} shows the relationship between feature valu
     \item \emph{Arrival-to-scan time}: The odds of receiving thrombolysis reduced by about 20 fold over the first 100 minutes of arrival to scan time.
     \item \emph{Stroke severity (NIHSS)}: The odds of receiving thrombolysis were lowest at NIHSS 0, increased and peaked at NIHSS 15-25, and then fell again with higher stroke severity (NIHSS above 25). The difference between minimum odds (at NIHSS 0) and maximum odds (at 15-25) of receiving thrombolysis was 30-35 fold.
     \item \emph{Stroke onset time type (precise vs. estimated)}: The odds of receiving thrombolysis were about 3 fold greater for precise onset time than estimated onset time.
-    \item \emph{Disability level (modified Rankin Scale, mRS) before stroke}: The odds of receiving thrombolysis fell about 5 fold between mRS 0 and 5.
+    \item \emph{Disability level (mRS) before stroke}: The odds of receiving thrombolysis fell about 5 fold between mRS 0 and 5.
 \end{itemize}
 
 
@@ -116,18 +116,18 @@ Figure \ref{fig:results_shap_violin} shows the relationship between feature valu
 
 Using the \emph{all data model}, the hospital SHAP values ranged from -1.4 to +1.4 (for patients attending each hospital). This range of SHAP (log odds) represented a 15 fold difference in odds of receiving thrombolysis between hospitals (most were in the range of -1 to +1, but this still represents a 7-8 fold difference in odds of receiving thrombolysis).
 
-Hospital SHAP value correlated with the observed hospital thrombolysis rate with an r-squared of 0.582, suggesting that 58\% (P$<$0.0001) of the between-hospital variance in thrombolysis use may be explained by the hospitals' SHAP values, i.e. the hospitals' predisposition and/or preparedness to use thrombolysis.
+The median hospital SHAP value correlated with the observed hospital thrombolysis rate with an r-squared of 0.582, suggesting that 58\% (P$<$0.0001) of the between-hospital variance in thrombolysis use may be explained by the hospitals' SHAP values, i.e. the hospitals' predisposition and/or preparedness to use thrombolysis.
 
-Using the \emph{10k holdout model}, the predicted use of thrombolysis across the 132 hospitals for the identical 10k cohort of patients (not used in training the model) ranged from 10\% to 45\%. The median hospital SHAP \emph{main effect} value for the 10k cohort of patients correlated very closely with the predicted thrombolysis use in the 10k cohort of patients at each hospital (r-squared = 0.947), confirming that the hospital SHAP is providing a direct insight into a hospitals' propensity to use thrombolysis.
+Using the \emph{10k holdout model}, the predicted use of thrombolysis across the 132 hospitals for the identical 10k cohort of patients (not used in training the model) ranged from 10\% to 45\%. The median hospital SHAP value for the 10k cohort of patients correlated very closely with the predicted thrombolysis use in the 10k cohort of patients at each hospital (r-squared = 0.944), confirming that the hospital SHAP is providing a direct insight into a hospitals' propensity to use thrombolysis.
 
 %to predict between-hospital differences in use of thrombolysis if all hospitals had the same patients arriving. All patient feature values were kept constant, except the hospital coding was changed to mimic all patients attending each of the 132 hospitals. P
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{How individual hospitals may modify general patterns of thrombolysis}
 
-The main effect of having a precise onset time was to increase the odds of receiving thrombolysis, as indicated by a positive SHAP value. Individual hospitals (in addition to the hospital feature having it's own main effect of influencing the odds of receiving thrombolysis) has their pair-wise interaction effect with each feature, such as on the effect of having a precise onset time. The top line of graphs in Figure \ref{fig:results_shap_hosp_intercations} show that some hospitals (such as "FAJKD7118X") attenuate the main effect, leading to a smaller difference in odds of receiving thrombolysis, whereas some hospitals (such as "HZNVT9936G") strengthening the effect, leading to a larger difference in odds of receiving thrombolysis depending on whether stroke onset time is known precisely.
+%The main effect of having a precise onset time was to increase the odds of receiving thrombolysis, as indicated by a positive SHAP value. Individual hospitals (in addition to the hospital feature having it's own main effect of influencing the odds of receiving thrombolysis) has their pair-wise interaction effect with each feature, such as on the effect of having a precise onset time. The top line of graphs in Figure \ref{fig:results_shap_hosp_intercations} show that some hospitals (such as "FAJKD7118X") attenuate the main effect, leading to a smaller difference in odds of receiving thrombolysis, whereas some hospitals (such as "HZNVT9936G") strengthening the effect, leading to a larger difference in odds of receiving thrombolysis depending on whether stroke onset time is known precisely.
 
-% (MA suggested re-write of the above paragraph): The main effect of having a precise onset time was to increase the odds of receiving thrombolysis, as indicated by a positive SHAP value. Hospitals have a dirrect effect on the odds of receiving thrombolysis (as seen in the the SHAP main effect), but may also modify the the effect of other features. The top line of graphs in Figure \ref{fig:results_shap_hosp_intercations} show that some hospitals (such as \emph{FAJKD7118X}) attenuate the effect of knowing stroke onset time precisely, leading to a smaller difference in odds of receiving thrombolysis, whereas some hospitals (such as \emph{HZNVT9936G}) strengthening the effect, leading to a larger difference in odds of receiving thrombolysis depending on whether stroke onset time is known precisely.
+The main effect of having a precise onset time was to increase the odds of receiving thrombolysis, as indicated by a positive SHAP value. Hospitals have a direct effect on the odds of receiving thrombolysis (as seen in the SHAP main effect for the hospital feature), but they may also modify the effect of other features. The top line of graphs in Figure \ref{fig:results_shap_hosp_intercations} show that some hospitals (such as \emph{FAJKD7118X}) attenuate the effect of knowing stroke onset time precisely, leading to a smaller difference in odds of receiving thrombolysis, whereas some hospitals (such as \emph{HZNVT9936G}) strengthening the effect, leading to a larger difference in odds of receiving thrombolysis depending on whether stroke onset time is known precisely.
 
 The plots in the first column of Figure \ref{fig:results_shap_hosp_intercations} shows the main effect for three features (precise onset time, stroke severity, and prior disability), followed by examples of hospitals which either attenuated (column two) or strengthened (column three) the effect of those three features. These SHAP interactions revealed how individual hospitals may differ in how they modify the effect of other patient features.
 
@@ -141,7 +141,7 @@ The plots in the first column of Figure \ref{fig:results_shap_hosp_intercations}
 
 \subsection{Comparing predicted thrombolysis decisions across hospitals, using artificial patients}
 
-Our \emph{ideally thrombolysable patient} was predicted to receive thrombolysis at 131/132 hospitals. By just changing two of the patients characteristics to create our \emph{likely thrombolysable patient} (from a stroke severity of NIHSS 15 to 5, and from a precise to an estimated stroke onset time), that patient would be expected to receive thrombolysis in only 35\% of hospitals. To further explore this between hospital variation, figure \ref{fig:results_artifical_shap_waterfall_with_violin} shows how the model predicts how each of the 132 hospitals responds to each of the \emph{likely thrombolysable patients} feature values, to arrive at the individual probability of receiving thrombolysis at each of the 132 hospitals (3 - 88\%).
+Our artificial \emph{ideally thrombolysable patient} was predicted to receive thrombolysis at 131/132 hospitals. By just changing two of the patients characteristics to create our artifical \emph{likely thrombolysable patient} (from a stroke severity of NIHSS 15 to 5, and from a precise to an estimated stroke onset time), that patient would be expected to receive thrombolysis in only 35\% of hospitals. To further explore this between hospital variation, Figure \ref{fig:results_artifical_shap_waterfall_with_violin} shows how the model predicts how each of the 132 hospitals responds to each of the \emph{likely thrombolysable patients} feature values, to arrive at the individual probability of receiving thrombolysis at each of the 132 hospitals (3 - 88\%).
 
 \begin{figure}[!h]
 \centering
