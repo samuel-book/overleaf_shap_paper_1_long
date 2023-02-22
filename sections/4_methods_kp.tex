@@ -10,19 +10,20 @@ All code, with detailed results, used is available online at \url{https://samuel
 
 \subsection{Data}
 
-Data were retrieved for 246,676 emergency stroke admissions to acute stroke teams in England and Wales for the three calendar years 2016 - 2018, obtained from the Sentinel Stroke National Audit Programme\footnote{https://www.strokeaudit.org/} (SSNAP). Data fields were provided for the hyper-acute phase of the stroke pathway, up to and including our target feature: \emph{receive thrombolysis} (full details of the data fields obtained are provided in the appendix). 88,928 of these patients arrived within 4 hours of known (precise or estimated) stroke onset, and were used in this modelling study (as they represent the patients that had time left to treat). 132 acute stroke hospitals were included (these were all units admitting an average of 100 patients per year, and delivering thrombolysis to at least 10 patients over 3 years). No identifiable patient or hospital information was obtained, and anonymised hospital names were provided. For modelling purposes, categorical features in the SSNAP dataset were represented as one-hot encoded features (a process which converts categorical features to a numerical form). There are 60 original features in the SSNAP dataset (before one-hot encoding categorical features).
+Data were retrieved for 246,676 emergency stroke admissions to acute stroke teams in England and Wales for the three calendar years 2016 - 2018, obtained from the Sentinel Stroke National Audit Programme\footnote{https://www.strokeaudit.org/} (SSNAP). Data fields were provided for the hyper-acute phase of the stroke pathway, up to and including our target feature: \emph{receive thrombolysis} (full details of the data fields obtained are provided in the appendix). Of these patients, 88,928 arrived within 4 hours of known (precise or estimated) stroke onset, and were used in this modelling study (as they represent the patients that had time left to treat). The data included 132 acute stroke hospitals (these were all units admitting an average of 100 patients per year, and delivering thrombolysis to at least 10 patients over 3 years). For modelling purposes, categorical features in the SSNAP dataset were represented as one-hot encoded features (a process which converts categorical features to a numerical form). There are 60 original features in the SSNAP dataset (before one-hot encoding categorical features).
 
  SSNAP has near-complete coverage of all acute stroke admissions in the UK (outside Scotland). All hospitals admitting acute stroke participate in the audit, and year-on-year comparison with Hospital Episode Statistics\footnote{https://digital.nhs.uk/data-and-information/data-tools-and-services/data-services/hospital-episode-statistics} confirms estimated case ascertainment of 95\% of coded cases of acute stroke.
 
-The NHS Health Research Authority decision tool\footnote{http://www.hra-decisiontools.org.uk/research/} was used to confirm that ethical approval was not required to access the data. Data access was authorised by the Healthcare Quality Improvement Partnership\footnote{https://www.hqip.org.uk/} (HQIP) (reference HQIP303). 
+The NHS Health Research Authority decision tool\footnote{http://www.hra-decisiontools.org.uk/research/} was used to confirm that ethical approval was not required to access the data. No identifiable patient or hospital information were provided in the data, and anonymised hospital names were provided. Governance of the data and access to SSNAP was authorised by the Healthcare Quality Improvement Partnership\footnote{https://www.hqip.org.uk/} (HQIP) (reference HQIP303). 
 
 \subsection{Machine learning models (to predict thromboylsis use)}
 We used an \emph{eXtreme Gradient Boosting model \cite{chen_xgboost_2016}} (`XGBoost`) to predict the probability of use of thrombolysis for each patient from their other feature values.
 
 \subsubsection{Feature selection}
-In order to provide a more understandable and explainable machine learning model, we restricted the features (patient characteristics) that were used in the model to those that provided the most information regarding use of thrombolysis. 
+Before applying SHAP, we aimed to enhance the understandability and explainability of our models through restricting the features (patient characteristics) included in the model. 
+% In order to provide a more understandable and explainable machine learning model, we restricted the features (patient characteristics) that were used in the model to those that provided the most information regarding use of thrombolysis. 
 
-Features were selected one at a time from the 60 original features in the SSNAP dataset by forward-feature selection (identifying one feature at a time that led to the greatest improvement in accuracy). This formed a feature subset in a greedy fashion. Model accuracy was measured by Receiver Operating Characteristic (ROC) Area Under Curve (AUC), using 5-fold cross-validation. We repeated this process to identify the top 25 features, and used these results to identify the number of features to include in our machine learning models (based on the observed diminishing returns).
+Features were selected one at a time from the 60 original features in the SSNAP dataset by forward-feature selection \cite{ferri_comparative_1994} (identifying one feature at a time that led to the greatest improvement in accuracy). This formed a feature subset in a greedy fashion. Model accuracy was measured by Receiver Operating Characteristic (ROC) Area Under Curve (AUC), using 5-fold cross-validation. We repeated this process to identify the top 25 features, and used these results to identify the number of features to include in our machine learning models (based on the observed diminishing returns).
 
 %In order to provide a more explainable machine learning model, the features (patient characteristics) were restricted to those that provided the most information regarding use of thrombolysis. Using forward sequential feature selection (identifying one feature at a time that led to greatest improvement in ROC AUC to form a feature subset in a greedy fashion, with ROC AUC measured using stratified 5-fold cross validation), we selected the top 25 features.
 
@@ -61,10 +62,11 @@ We identified the patient at each hospital that the model predicted had the high
 \item All patients who had not received thrombolysis
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\iffalse
+%\iffalse
 \subsection{Variation in hospital thrombolysis use for patient subgroups}
 
-We analysed the observed and predicted use of thrombolysis in four subgroups of patients. One `ideally' thrombolysable patient, and three 'sub-optimal' thrombolysable patients with one non-ideal feature. We based the ideal definition on observing the relationships between feature values and thrombolysis use. The four sub-groups are defined as:
+\iffalse
+We analysed the observed and predicted use of thrombolysis in four subgroups of patients. One `ideally' thrombolysable patient, and three 'sub-optimal' thrombolysable patient groups (selecting patients based on one feature set to a sub-optimal value). We based the ideal definition on observing the relationships between feature values and thrombolysis use. The four sub-groups are defined as:
 
 \begin{enumerate}
   \item An 'ideally' thrombolysable patient:
@@ -79,23 +81,57 @@ We analysed the observed and predicted use of thrombolysis in four subgroups of 
     \item Younger than 80 years old
     \item Onset not during sleep
   \end{itemize}
-  \item The `ideally' thrombolysable patient with a mild stroke severity (NIHSS less than 5)
-  \item The `ideally' thrombolysable patient with no precise stroke onset time known
-  \item The `ideally' thrombolysable patient with pre-stroke disability (mRS greater than 2)
+  \item Patients with a mild stroke severity (NIHSS less than 5)
+  \item Patients with no precise stroke onset time known
+  \item Patients with pre-stroke disability (mRS greater than 2)
+\end{enumerate}
+
+The observed thrombolysis use at each hospital was taken from the SSNAP dataset, with data limited to the patients that matched the patient characteristics and attending each hospital (and so the patient mix was different for each hospital).
+
+In order to reveal the variation in thrombolysis that was due to hospital processes and decision-making we predicted thrombolysis use for the same patient mix at each hospital by using the \emph{10k holdout model}.
+\fi
+We analysed the observed and predicted use of thrombolysis in subgroups of patients. One `ideally' thrombolysable patient, and nine (one per feature) 'sub-optimal' thrombolysable patient groups (selecting patients based on one feature set to a sub-optimal value). We based the ideal definition on observing the relationships between feature values and thrombolysis use, and chose the 'sub-optimal' feature value by choosing a value that's within the contentious range for decision making (a feature value that corresponds with a SHAP value of zero, or the least favourable for binary features). The ten sub-groups are defined as:
+
+\begin{enumerate}
+  \item An 'ideally' thrombolysable patient:
+  \begin{itemize}
+    \item Mid-level stroke severity (NIHSS in range 10-25)
+    \item Short arrival-to-scan time (less than 30 minutes)
+    \item Stroke caused by infarction
+    \item Precise stroke onset time known
+    \item No pre-stroke disability (mRS 0)
+    \item Not taking any atrial fibrillation anticoagulants
+    \item Short onset-to-arrival time (less than 90 minutes)
+    \item Younger than 80 years old
+    \item Onset not during sleep
+  \end{itemize}
+  \item Patients with a mild stroke severity (NIHSS less than 5)
+  \item Patients with no precise stroke onset time known
+  \item Patients with pre-stroke disability (mRS greater than 2)
+  \item Patients with a haemorrhagic stroke
+  \item Patients with 60-90 minutes arrival-to-scan time
+  \item Patients with use of AF anticoagulants
+  \item Patients with 150-180 minutes onset-to-arrival time
+  \item Patients with onset during sleep
+  \item Patients aged 80-95 years old
 \end{enumerate}
 
 The observed thrombolysis use at each hospital was taken from the SSNAP dataset, with data limited to the patients that matched the patient characteristics and attending each hospital (and so the patient mix was different for each hospital).
 
 In order to reveal the variation in thrombolysis that was due to hospital processes and decision-making we predicted thrombolysis use for the same patient mix at each hospital by using the \emph{10k holdout model}.
 
+
+
+
 %To provide a purer \emph{hospital effect} result, we removed the \emph{patient effect} by also providing a predicted thrombolysis use for the same patient mix (10k patient cohort) at each hospital by using the \emph{10k holdout model}.
 
 %To provide a purer \emph{hospital effect} result, we removed the \emph{ patient effect}) by also providing a predicted thrombolysis use for the same patient mix at each hospital. Using the model trained on 78,928 patients, pass all of the 10k patients (that were held back from the training process) though the model, whilst setting the hospital ID to each hospital in turn.
-\fi
+%\fi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %\subsection{Waterfall plots of SHAP values}
 \subsection{SHapley Additive exPlanation values}
-SHAP provides a measure of the contribution of each patient feature value to the final predicted probability of receiving thrombolysis for that individual. SHAP values provide the influence of each feature, as the change in log-odds of receiving thrombolysis. SHAP values expressed as log-odds are additive, i.e. the final log-odds of receiving thrombolysis is the sum of the base model prediction (the log-odds of receiving thrombolysis before feature influences are considered), and the SHAP values for each feature (which are comprised of the feature's main effect and all of the pairwise interaction effects with each of the other features). 
+
+We sought to make our models explainable using SHAP (cite). SHAP has been used elsewhere in stroke too.... do x y and z (cite). SHAP provides a measure of the contribution of each patient feature value to the final predicted probability of receiving thrombolysis for that individual. SHAP values provide the influence of each feature, as the change in log-odds of receiving thrombolysis. SHAP values expressed as log-odds are additive, i.e. the final log-odds of receiving thrombolysis is the sum of the base model prediction (the log-odds of receiving thrombolysis before feature influences are considered), and the SHAP values for each feature (which are comprised of the feature's main effect and all of the pairwise interaction effects with each of the other features). 
 
 For calculation of SHAP values we used the Shap library \cite{lundberg_unified_2017}.
 

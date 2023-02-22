@@ -25,11 +25,13 @@ The best model with 1, 2, 5, 10, 25 \& all 60 original features had ROC AUCs of 
 
 These were not necessarily the 10 most important features, as another highly correlated feature may also have been important, but if a feature is highly correlated with an already chosen feature, it will add less additional value.
 
-Correlations between the 10 features were measured using coefficients of determination (r-squared). All r-squared were less than 0.05 except 1. age and prior disability level (r-squared 0.146), and 2. onset during sleep and precise onset time (r-squared 0.078).
+Correlations between the 10 features were measured using coefficients of determination (r-squared). All r-squared were less than 0.05 except a) age and prior disability level (r-squared 0.146), and b) onset during sleep and precise onset time (r-squared 0.078).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{Model accuracy}
+
+Should be contrasted to the original model already published.  The point is that you've got a nice explainable model here with very similar accuracy.  Make that clear.
 
 Model accuracy was measured using stratified 5-fold cross validation. Overall accuracy was 85.0\% (83.9\% sensitivity and specificity could be achieved simultaneously). The ROC AUC was 0.918. The model predicted hospital thrombolysis use at each hospital with very good accuracy (r-squared = 0.977).
 
@@ -54,19 +56,20 @@ As seen in Figure \ref{fig:results_most_thrombolysable}, compared with the other
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=1.0\textwidth]{./images/02a_most_thrombolsyable_violin}
+\includegraphics[width=1.0\textwidth]%{./images/02a_most_thrombolsyable_violin}
+{./images/02a_xgb_10_features_most_thrombolsyable_violin}
 \caption{Violin plots comparing feature values between the patient with the highest probability of thrombolysis at each hospital (`Most thrombolysable') with: 1) all patients, 2) all patients who had received thrombolysis, and 3) all patients who had not received thrombolysis. Horizontal lines show the mean value of each group.}
 \label{fig:results_most_thrombolysable}
 \end{figure}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\iffalse
+%\iffalse
 \subsection{Variation in hospital thrombolysis use for patient subgroups}
 
 Figure \ref{fig:results_boxplot} shows a boxplot of observed and predicted use of thrombolysis, broken down by subgroup. The three subgroups of patients with one non-ideal feature (NIHSS $<$5, estimated stroke onset time, pre-stroke mRS $>2$) all had reduced thrombolysis use, and combining these non-ideal features reduced thrombolysis use further. The observed and predicted thrombolysis use show the same general results, but some small differences existed: 1) The use of thrombolysis in \emph{ideal} patients is a little lower in the observed vs predicted results (mean hospital thrombolysis use = 89\% vs 99\%), 2) The predicted results show a stronger effect of combining non-ideal features, 3) The observed thrombolysis rate shows higher between-hospital variation than the predicted thrombolysis rate. This may be partly explained by the observed thrombolysis rate being based on different patients at each hospital, but may also be partly explained by actual use of thrombolysis being slightly more variable than predicted thrombolysis use (which will follow general hospital patterns, and will not include, for example, between-clinician variation at each hospital).
 
-For both the predicted and observed thrombolysis, subgroup thrombolysis use tended to reduce in parallel (r-squared 0.221 to 0.308 in observed thrombolysis use, and 0.445 to 0.621 in the predicted thrombolysis use). \kpFIXME{State reduce, but these values increase}
+For both the observed and predicted thrombolysis, subgroup thrombolysis use tended to reduce in parallel (r-squared 0.221 to 0.308 in observed thrombolysis use, and 0.445 to 0.621 in the predicted thrombolysis use). \kpFIXME{Ask Mike about these values - state reduce, but these values increase, also there are wider ranges in the notebooks 15 \& 15a, why not state 0.868 to 0.445 and 0.680 to 0.221?}
 
 \begin{figure}[!h]
 \centering
@@ -74,7 +77,7 @@ For both the predicted and observed thrombolysis, subgroup thrombolysis use tend
 \caption{Boxplot for either observed (top) or predicted (bottom) use of thrombolysis for subgroups of patients.}
 \label{fig:results_boxplot}
 \end{figure}
-\fi
+%\fi
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Individual patient SHAP values}
@@ -92,6 +95,28 @@ SHAP values are presented as how they affect log odds of receiving thrombolysis,
 
 \subsection{The relationship between feature values and the odds of receiving thrombolysis (SHAP values)}
 
+Figure \ref{fig:results_shap_violin} shows the relationship between feature values and SHAP values for all features (apart from hospital feature). Key observations are (with SHAP influence converted from log-odds to odds):
+
+\begin{itemize}
+    \item \emph{Arrival-to-scan time}: The odds of receiving thrombolysis reduced by about 20 fold over the first 100 minutes of arrival to scan time.
+    \item \emph{Stroke type}: The SHAP values for stroke type show that the model effectively eliminated any probability of receiving thrombolysis for non-ischaemic (haemorrhagic) stroke.
+    \item \emph{Stroke severity (NIHSS)}: The odds of receiving thrombolysis were lowest at NIHSS 0, increased and peaked at NIHSS 15-25, and then fell again with higher stroke severity (NIHSS above 25). The difference between minimum odds (at NIHSS 0) and maximum odds (at 15-25) of receiving thrombolysis was 30-35 fold.
+    \item \emph{Stroke onset time type (precise vs. estimated)}: The odds of receiving thrombolysis were about 3 fold greater for precise onset time than estimated onset time.
+    \item \emph{Disability level (mRS) before stroke}: The odds of receiving thrombolysis fell about 5 fold between mRS 0 and 5.
+    \item \emph{Use of AF anticoagulants}: The odds of receiving thrombolysis were about n fold greater for no use.
+    \item \emph{Onset-to-arrival time}: The odds of receiving thrombolysis were similar below 120 minutes, then fell about n fold between 120 and above.
+    \item \emph{Onset during sleep}: The odds of receiving thrombolysis were about n fold lower for onset during sleep.
+    \item \emph{Age}: The odds of receiving thrombolysis were similar below 80 years old, then fell about n fold between 80 and 110 years old.    
+\end{itemize}
+
+\begin{figure}[!h]
+\centering
+\includegraphics[width=1\textwidth]{./images/03d_xgb_10_features_thrombolysis_shap_violin_all_features}
+\caption{Violin plots showing the relationship between SHAP values and feature values. The horizontal line shows the median SHAP value. The plots are ordered in ranked feature importance (taken as the mean absolute SHAP value across all instances).}
+\label{fig:results_shap_violin}
+\end{figure}
+
+\iffalse
 Figure \ref{fig:results_shap_violin} shows the relationship between feature values and SHAP values for the top six influential features, for the 71,142 individual patients in the first of the 5 k-fold training set. Key observations are (with SHAP influence converted from log-odds to odds):
 
 \begin{itemize}
@@ -102,13 +127,15 @@ Figure \ref{fig:results_shap_violin} shows the relationship between feature valu
     \item \emph{Disability level (mRS) before stroke}: The odds of receiving thrombolysis fell about 5 fold between mRS 0 and 5.
 \end{itemize}
 
-
 \begin{figure}[!h]
 \centering
 \includegraphics[width=1\textwidth]{./images/03_xgb_10_features_thrombolysis_shap_violin}
-\caption{Violin plots showing the relationship between SHAP values and feature values. The horizontal line shows the median SHAP value. SHAP values were taken from the 71,142 patients in the first of the 5 k-fold training set.}
+\caption{Violin plots showing the relationship between SHAP values and feature values. The horizontal line shows the median SHAP value.}
 \label{fig:results_shap_violin}
 \end{figure}
+
+\fi
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -145,7 +172,7 @@ Our artificial \emph{ideally thrombolysable patient} was predicted to receive th
 
 \begin{figure}[!h]
 \centering
-\includegraphics[width=0.85\textwidth]{./images/21_shap_waterfall_with_violin_contentious}
+\includegraphics[width=0.85\textwidth]{./images/21_shap_waterfall_with_violin_no_benchmark}
 \caption{SHAP plots for the same patient attending 132 different hospitals. The patient has the following feature values: Onset to arrival = 60 mins, Arrival to scan = 15 mins, Infarction = 1, NIHSS = 5, Prior disability level = 0, Precise onset time = 0, Use of AF anticoagulants = 0. The plot shows how each patient feature value contributes to the final prediction of whether that patients is likely to receive thrombolysis.}
 \label{fig:results_artifical_shap_waterfall_with_violin}
 \end{figure}
